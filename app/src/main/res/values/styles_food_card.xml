@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 食品卡片基础样式 -->
+    <style name="FoodCard" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">1dp</item>
+    </style>
+
+    <!-- 食品卡片图片样式 -->
+    <style name="FoodCard.Image" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">200dp</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <!-- 食品卡片标题样式 -->
+    <style name="FoodCard.Title" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#DE000000</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <!-- 食品卡片信息图标样式 -->
+    <style name="FoodCard.InfoIcon" parent="">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">16dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:alpha">0.6</item>
+    </style>
+
+    <!-- 食品卡片信息文本样式 -->
+    <style name="FoodCard.InfoText" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#99000000</item>
+    </style>
+
+    <!-- 食品卡片标签样式 -->
+    <style name="FoodCard.Tag" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="chipBackgroundColor">#F5F5F5</item>
+        <item name="android:textColor">#757575</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginTop">12dp</item>
+    </style>
+</resources> 

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/FoodCard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- 图片区域 -->
+        <ImageView
+            android:id="@+id/iv_food"
+            style="@style/FoodCard.Image"
+            android:src="@drawable/placeholder_food"/>
+
+        <!-- 内容区域 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 标题行 -->
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/FoodCard.Title"
+                android:text="山城火锅"/>
+
+            <!-- 信息行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    style="@style/FoodCard.InfoIcon"
+                    android:layout_marginStart="0dp"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="#757575"/>
+
+                <TextView
+                    android:id="@+id/tv_time"
+                    style="@style/FoodCard.InfoText"
+                    android:text="07-15 晚餐"
+                    android:textColor="#757575"/>
+
+                <ImageView
+                    style="@style/FoodCard.InfoIcon"
+                    android:src="@drawable/ic_star"
+                    app:tint="#FF9800"/>
+
+                <TextView
+                    android:id="@+id/tv_rating"
+                    style="@style/FoodCard.InfoText"
+                    android:text="4.5"
+                    android:textColor="#FF9800"/>
+
+                <ImageView
+                    style="@style/FoodCard.InfoIcon"
+                    android:src="@drawable/ic_money"
+                    app:tint="#4CAF50"/>
+
+                <TextView
+                    android:id="@+id/tv_price"
+                    style="@style/FoodCard.InfoText"
+                    android:text="¥98/人"
+                    android:textColor="#4CAF50"/>
+            </LinearLayout>
+
+            <!-- 标签行 -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/FoodCard.Tag"
+                    android:text="#麻辣"/>
+
+                <com.google.android.material.chip.Chip
+                    style="@style/FoodCard.Tag"
+                    android:text="#朋友聚餐"/>
+            </com.google.android.material.chip.ChipGroup>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView> 
