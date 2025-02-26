@@ -549,3 +549,232 @@ values-night/themes.xml    // 夜间模式
    - 优化视图层级
    - 合理使用缓存
    - 控制内存使用
+
+## 2025-02-26 10:10 添加页面开发记录
+
+### 基本思路
+
+1. 页面定位：
+   - 作为主要的内容创建入口
+   - 采用底部弹出式设计
+   - 全屏展示以获得更好的编辑体验
+
+2. 功能规划：
+   ```
+   核心功能：
+   - 店铺信息录入（名称、位置等）
+   - 用餐体验记录（评分、标签等）
+   - 消费信息记录（金额）
+   - 照片上传功能
+   ```
+
+3. 交互设计：
+   - 顶部工具栏：返回和保存操作
+   - 表单区域：采用 Material Design 风格
+   - 评分控件：自定义 RatingBar 样式
+   - 照片上传：支持拍照和相册选择
+   - 标签选择：使用 Chip 组件实现
+
+4. 技术方案：
+   ```
+   实现方式：
+   - 使用 BottomSheetDialogFragment 作为容器
+   - 自定义样式文件统一管理样式
+   - 使用 Material Components 组件
+   - 模块化设计便于扩展
+   ```
+
+5. 样式规范：
+   - 主色调：#FF9800（橙色）
+   - 统一的圆角和间距
+   - 一致的输入框样式
+   - 清晰的视觉层级
+
+### 问题记录
+
+1. BottomSheet 展开问题
+```
+现象：底部弹窗无法完全展开，备注栏无法完整显示
+原因：BottomSheet 默认行为限制了展开高度
+解决方案：
+- 设置 behavior 状态为 STATE_EXPANDED
+- 设置 layout_height 为 MATCH_PARENT
+- 禁用折叠和拖动功能
+```
+
+2. Dialog 类导入错误
+```
+错误：找不到符号 Dialog
+原因：缺少必要的类导入
+解决方案：添加 import android.app.Dialog
+```
+
+3. 评分条样式问题
+```
+现象：RatingBar 星星过大且无法点击
+分析：
+- Small 样式太小且默认不可交互
+- 标准样式太大
+- Indicator 样式最适合但需要调整
+
+解决方案：
+- 使用 Widget.AppCompat.RatingBar.Indicator 样式
+- 设置 android:minHeight="20dp"
+- 设置 android:isIndicator="false" 启用交互
+```
+
+4. 图标大小调整问题
+```
+错误：attribute startIconSize not found
+原因：尝试使用不存在的属性控制图标大小
+解决方案：
+- 创建 layer-list drawable 包装原图标
+- 在 drawable 中直接控制尺寸
+- 统一设置为 28dp 大小
+```
+
+### 经验总结
+
+1. BottomSheet 使用建议：
+   - 明确展开行为
+   - 合理控制交互限制
+   - 注意输入法弹出适配
+
+2. 样式调整技巧：
+   - 优先使用现有样式变体
+   - 通过 drawable 控制图标尺寸
+   - 保持视觉统一性
+
+3. 开发流程改进：
+   - 完善错误处理机制
+   - 建立UI调整指南
+   - 规范化组件使用方式
+
+## 2025-02-26 11:30 应用图标更新问题
+
+### 问题描述
+替换了 mipmap 文件夹下的应用图标资源，但应用图标没有更新。同时发现了多余的 XML 文件：
+- mipmap-anydpi-v26/ic_launcher.xml
+- mipmap-anydpi-v26/ic_launcher_round.xml
+
+### 问题分析
+1. 图标替换不完整：
+   - mipmap-mdpi (1x)
+   - mipmap-hdpi (1.5x)
+   - mipmap-xhdpi (2x)
+   - mipmap-xxhdpi (3x)
+   - mipmap-xxxhdpi (4x)
+   需要替换所有密度下的图标文件
+
+2. anydpi-v26 文件夹说明：
+   - 用于 Android 8.0 (API 26) 及以上的自适应图标
+   - 将图标分为前景层和背景层
+   - 支持不同形状的设备显示
+
+### 解决方案
+1. 完整的图标替换流程：
+```
+步骤：
+1. 删除所有 mipmap 文件夹下的旧图标
+2. 将新图标按尺寸放入对应文件夹：
+   - mipmap-mdpi: 48x48px
+   - mipmap-hdpi: 72x72px
+   - mipmap-xhdpi: 96x96px
+   - mipmap-xxhdpi: 144x144px
+   - mipmap-xxxhdpi: 192x192px
+3. 保留 anydpi-v26 文件夹下的 XML 文件
+4. 更新 XML 文件中的资源引用
+```
+
+2. 自适应图标配置：
+```xml
+<adaptive-icon>
+    <background android:drawable="@drawable/ic_launcher_background"/>
+    <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+    <monochrome android:drawable="@drawable/ic_launcher_foreground"/>
+</adaptive-icon>
+```
+
+3. AndroidManifest.xml 检查：
+```xml
+<application
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    ...>
+```
+
+### 最佳实践
+1. 图标资源管理：
+   - 使用 Android Studio 的 Asset Studio 工具
+   - 生成全套密度的图标
+   - 保持文件命名一致性
+
+2. 自适应图标设计：
+   - 背景层：纯色或简单图案
+   - 前景层：Logo或主要图标
+   - 考虑不同设备形状的显示效果
+
+3. 开发建议：
+   - 定期清理未使用的资源文件
+   - 使用版本控制跟踪资源变更
+   - 测试不同设备上的显示效果
+
+### 注意事项
+1. 清除应用缓存后重新安装
+2. 部分设备可能需要重启才能看到新图标
+3. 确保新图标符合 Google Play 商店的要求
+
+## 2025-02-26 17:07 应用图标更新方案
+
+### 使用 Asset Studio 更新图标
+
+1. 操作步骤：
+```
+1. Android Studio 中右键 res 文件夹
+2. 选择 New > Image Asset
+3. 选择 Launcher Icons (Adaptive and Legacy)
+4. 配置图标：
+   - 前景层：选择已有图片
+   - 背景层：选择纯色背景 (#FFFFFF)
+   - 调整图标大小和位置
+5. 生成全套图标资源
+```
+
+2. 生成的资源文件：
+```
+- mipmap-anydpi-v26/
+  ├── ic_launcher.xml
+  └── ic_launcher_round.xml
+- values/
+  └── ic_launcher_background.xml  (背景色定义)
+- mipmap-*dpi/
+  ├── ic_launcher.png
+  ├── ic_launcher_round.png
+  └── ic_launcher_foreground.png
+```
+
+3. 配置文件内容：
+```xml
+<!-- ic_launcher.xml / ic_launcher_round.xml -->
+<adaptive-icon>
+    <background android:drawable="@color/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>
+
+<!-- ic_launcher_background.xml -->
+<resources>
+    <color name="ic_launcher_background">#FFFFFF</color>
+</resources>
+```
+
+### 优点
+1. 自动生成所有必需的资源文件
+2. 自动处理不同密度的图标尺寸
+3. 正确配置自适应图标结构
+4. 保持项目资源结构清晰
+
+### 注意事项
+1. 原图需要足够清晰，建议使用矢量图或高分辨率图片
+2. 注意预览不同设备形状下的显示效果
+3. 生成后检查所有密度下的图标质量
+4. 可能需要清除缓存并重新安装应用

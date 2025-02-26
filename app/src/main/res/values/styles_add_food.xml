@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 底部弹窗主题 -->
+    <style name="AddFood.BottomSheet" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AddFood.BottomSheet.Modal</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="AddFood.BottomSheet.Modal" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+
+    <!-- 表单输入框样式 -->
+    <style name="AddFood.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxStrokeColor">#FF9800</item>
+        <item name="hintTextColor">#FF9800</item>
+    </style>
+
+    <!-- 标签样式 -->
+    <style name="AddFood.Label" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <!-- 选择标签样式 -->
+    <style name="AddFood.Chip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="chipBackgroundColor">@color/chip_background_color</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">#FF9800</item>
+        <item name="android:textSize">14sp</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+    </style>
+
+    <!-- 照片按钮样式 -->
+    <style name="AddFood.PhotoButton" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bg_photo_button</item>
+        <item name="android:padding">24dp</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <!-- 完成按钮样式 -->
+    <style name="AddFood.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="backgroundTint">#FF9800</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- 评分条样式 -->
+    <style name="AddFood.RatingBar" parent="Widget.AppCompat.RatingBar.Indicator">
+        <item name="android:progressTint">#FF9800</item>
+        <item name="android:secondaryProgressTint">#FF9800</item>
+        <item name="android:stepSize">0.5</item>
+        <item name="android:numStars">5</item>
+        <item name="android:rating">5</item>
+        <item name="android:minHeight">30dp</item>
+        <item name="android:maxHeight">30dp</item>
+        <item name="android:isIndicator">false</item>
+    </style>
+
+    <!-- 添加标签按钮样式 -->
+    <style name="AddFood.Chip.Add" parent="AddFood.Chip">
+        <item name="chipBackgroundColor">#F5F5F5</item>
+        <item name="android:textColor">#757575</item>
+        <item name="chipStrokeColor">#CCCCCC</item>
+    </style>
+</resources> 

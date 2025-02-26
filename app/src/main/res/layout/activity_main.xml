@@ -26,18 +26,18 @@
 
                 <ImageButton
                     android:id="@+id/btn_menu"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_menu"
-                    android:tint="@color/white" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="TastyLog"
+                    android:text="FoodJournal"
                     android:textColor="@color/white"
                     android:textSize="24sp"
                     android:fontFamily="@font/pacifico" />

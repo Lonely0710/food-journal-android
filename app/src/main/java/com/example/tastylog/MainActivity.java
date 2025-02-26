@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.tastylog.adapter.FoodCardAdapter;
 import com.example.tastylog.decoration.SpaceItemDecoration;
 import com.example.tastylog.model.FoodItem;
+import com.example.tastylog.fragment.AddFoodFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         // 设置悬浮按钮
         FloatingActionButton fab = findViewById(R.id.fab_add);
         fab.setOnClickListener(v -> {
-            // 处理添加按钮点击
+            new AddFoodFragment().show(getSupportFragmentManager(), "add_food");
         });
 
         initFoodList();

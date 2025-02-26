@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/loading_animation"
+        app:lottie_rawRes="@raw/steam_loading"
         tools:ignore="MissingClass" />
 
     <!-- 中心表单卡片 -->
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/pacifico_regular"
-                android:text="TastyLog"
+                android:text="FoodJournal"
                 android:textColor="#FF9800"
                 android:textSize="28sp" />
 
