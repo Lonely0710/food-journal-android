@@ -13,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.example.tastylog.R;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public class AddFoodFragment extends BottomSheetDialogFragment {
 
@@ -34,14 +35,26 @@ public class AddFoodFragment extends BottomSheetDialogFragment {
             if (bottomSheet != null) {
                 // 获取behavior
                 BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-                // 设置高度
-                bottomSheet.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-                // 展开
-                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                // 禁用折叠
-                behavior.setSkipCollapsed(true);
+                
+                // 设置固定高度为屏幕高度的 2/3
+                int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                int targetHeight = (screenHeight * 2) / 3;
+                
+                // 设置布局参数
+                ViewGroup.LayoutParams params = bottomSheet.getLayoutParams();
+                params.height = targetHeight;
+                bottomSheet.setLayoutParams(params);
+                
                 // 禁用拖动
                 behavior.setDraggable(false);
+                // 禁用折叠
+                behavior.setSkipCollapsed(true);
+                // 设置展开状态
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                // 固定内容
+                behavior.setFitToContents(true);
+                // 设置峰值高度
+                behavior.setPeekHeight(targetHeight);
             }
         }
     }
@@ -57,13 +70,41 @@ public class AddFoodFragment extends BottomSheetDialogFragment {
 
     private void initViews(View view) {
         // 返回按钮
-        view.findViewById(R.id.btn_back).setOnClickListener(v -> dismiss());
+        view.findViewById(R.id.btn_back).setOnClickListener(v -> {
+            // 获取 BottomSheet
+            View bottomSheet = ((View) view.getParent());
+            BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+            
+            // 添加状态回调
+            behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                        dismiss();
+                    }
+                }
 
-        // 保存按钮
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    // 可以在这里添加其他动画效果
+                }
+            });
+
+            // 设置可以隐藏
+            behavior.setHideable(true);
+            // 执行隐藏动画
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        });
+
+        // 保存按钮也使用同样的动画效果
         view.findViewById(R.id.btn_save).setOnClickListener(v -> {
             // TODO: 保存逻辑
             Toast.makeText(getContext(), "保存成功", Toast.LENGTH_SHORT).show();
-            dismiss();
+            
+            View bottomSheet = ((View) view.getParent());
+            BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+            behavior.setHideable(true);
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         });
 
         // 照片上传区域点击事件

@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/orange_500"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="美食详情"
+        app:titleTextColor="@android:color/white"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"/>
+
+            <!-- 餐厅信息卡 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- 餐厅名称和评分 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_store"
+                            app:tint="#FF9800"/>
+
+                        <TextView
+                            android:id="@+id/tv_store_name"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="老北京炸酱面馆"
+                            android:textColor="#DE000000"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+
+                        <RatingBar
+                            android:id="@+id/rating_bar"
+                            style="?android:attr/ratingBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:rating="4.5"
+                            android:stepSize="0.5"/>
+
+                    </LinearLayout>
+
+                    <!-- 地址 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="#757575"/>
+
+                        <TextView
+                            android:id="@+id/tv_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="朝阳区工体北路12号"
+                            android:textColor="#757575"/>
+
+                    </LinearLayout>
+
+                    <!-- 营业时间 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_time"
+                            app:tint="#757575"/>
+
+                        <TextView
+                            android:id="@+id/tv_business_hours"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="每周一休息"
+                            android:textColor="#757575"/>
+
+                    </LinearLayout>
+
+                    <!-- 人均价格 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_money"
+                            app:tint="#4CAF50"/>
+
+                        <TextView
+                            android:id="@+id/tv_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="人均 ¥25"
+                            android:textColor="#4CAF50"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 用户数据卡片 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- 就餐时间 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="#757575"/>
+
+                        <TextView
+                            android:id="@+id/tv_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="2024-07-12 午餐"
+                            android:textColor="#757575"/>
+
+                    </LinearLayout>
+
+                    <!-- 标签 -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp">
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="#传统小吃"
+                            style="@style/Widget.MaterialComponents.Chip.Action"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="#一人食"
+                            style="@style/Widget.MaterialComponents.Chip.Action"/>
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                    <!-- 备注 -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="备注"
+                        android:textColor="#DE000000"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tv_notes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="面条劲道，炸酱咸香适中"
+                        android:textColor="#757575"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 底部按钮栏 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="编辑"
+            android:textColor="@android:color/white"
+            app:icon="@drawable/ic_edit"
+            app:iconTint="@android:color/white"
+            app:iconGravity="textStart"
+            app:backgroundTint="@color/orange_500"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="删除"
+            android:textColor="@color/orange_500"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="@color/orange_500"
+            app:iconGravity="textStart"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_share"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="分享"
+            android:textColor="@color/orange_500"
+            app:icon="@drawable/ic_share"
+            app:iconTint="@color/orange_500"
+            app:iconGravity="textStart"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+    </LinearLayout>
+
+</LinearLayout> 

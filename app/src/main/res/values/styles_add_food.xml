@@ -5,6 +5,9 @@
         <item name="bottomSheetStyle">@style/AddFood.BottomSheet.Modal</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="AddFood.BottomSheet.Modal" parent="Widget.Design.BottomSheet.Modal">

@@ -19,8 +19,9 @@ import java.util.List;
 
 public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHolder> {
     private List<FoodItem> foodList = new ArrayList<>();
+    private OnItemClickListener onItemClickListener;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivFood;
         TextView tvTitle;
         TextView tvTime;
@@ -36,6 +37,15 @@ public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHo
             tvRating = view.findViewById(R.id.tv_rating);
             tvPrice = view.findViewById(R.id.tv_price);
             chipGroup = view.findViewById(R.id.chip_group);
+
+            view.setOnClickListener(v -> {
+                if (onItemClickListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        onItemClickListener.onItemClick(foodList.get(position));
+                    }
+                }
+            });
         }
     }
 
@@ -75,5 +85,13 @@ public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHo
     public void setFoodList(List<FoodItem> foodList) {
         this.foodList = foodList;
         notifyDataSetChanged();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(FoodItem foodItem);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
     }
 } 

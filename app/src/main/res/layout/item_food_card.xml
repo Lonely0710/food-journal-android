@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <!-- 图片区域 -->
@@ -20,19 +20,46 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="12dp">
 
-            <!-- 标题行 -->
-            <TextView
-                android:id="@+id/tv_title"
-                style="@style/FoodCard.Title"
-                android:text="山城火锅"/>
+            <!-- 标题和评分行 -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <!-- 信息行 -->
+                <TextView
+                    android:id="@+id/tv_title"
+                    style="@style/FoodCard.Title"
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@id/rating_layout"
+                    android:text="山城火锅"/>
+
+                <LinearLayout
+                    android:id="@+id/rating_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        style="@style/FoodCard.InfoIcon"
+                        android:layout_marginStart="0dp"
+                        android:src="@drawable/ic_star"
+                        app:tint="#FF9800"/>
+
+                    <TextView
+                        android:id="@+id/tv_rating"
+                        style="@style/FoodCard.InfoText.Rating"
+                        android:text="4.5"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <!-- 日期和价格行 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -45,19 +72,7 @@
                 <TextView
                     android:id="@+id/tv_time"
                     style="@style/FoodCard.InfoText"
-                    android:text="07-15 晚餐"
-                    android:textColor="#757575"/>
-
-                <ImageView
-                    style="@style/FoodCard.InfoIcon"
-                    android:src="@drawable/ic_star"
-                    app:tint="#FF9800"/>
-
-                <TextView
-                    android:id="@+id/tv_rating"
-                    style="@style/FoodCard.InfoText"
-                    android:text="4.5"
-                    android:textColor="#FF9800"/>
+                    android:text="07-15 晚餐"/>
 
                 <ImageView
                     style="@style/FoodCard.InfoIcon"
@@ -66,9 +81,8 @@
 
                 <TextView
                     android:id="@+id/tv_price"
-                    style="@style/FoodCard.InfoText"
-                    android:text="¥98/人"
-                    android:textColor="#4CAF50"/>
+                    style="@style/FoodCard.InfoText.Price"
+                    android:text="¥98/人"/>
             </LinearLayout>
 
             <!-- 标签行 -->
@@ -76,19 +90,10 @@
                 android:id="@+id/chip_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="6dp">
 
-                <com.google.android.material.chip.Chip
-                    style="@style/FoodCard.Tag"
-                    android:text="#麻辣"/>
-
-                <com.google.android.material.chip.Chip
-                    style="@style/FoodCard.Tag"
-                    android:text="#朋友聚餐"/>
+                <!-- 动态添加标签 -->
             </com.google.android.material.chip.ChipGroup>
-
         </LinearLayout>
-
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView> 

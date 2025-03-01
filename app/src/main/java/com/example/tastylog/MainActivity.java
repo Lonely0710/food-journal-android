@@ -1,5 +1,6 @@
 package com.example.tastylog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
@@ -8,6 +9,8 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,6 +21,11 @@ import com.example.tastylog.adapter.FoodCardAdapter;
 import com.example.tastylog.decoration.SpaceItemDecoration;
 import com.example.tastylog.model.FoodItem;
 import com.example.tastylog.fragment.AddFoodFragment;
+import com.example.tastylog.fragment.FoodDetailFragment;
+import com.example.tastylog.fragment.FavoriteFragment;
+import com.example.tastylog.fragment.HomeFragment;
+import com.example.tastylog.fragment.MineFragment;
+import com.example.tastylog.fragment.StatsFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +50,21 @@ public class MainActivity extends AppCompatActivity {
         // 设置底部导航
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
-            // 处理导航项选择
-            return true;
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                switchFragment(new HomeFragment());
+                return true;
+            } else if (id == R.id.nav_stats) {
+                switchFragment(new StatsFragment());
+                return true;
+            } else if (id == R.id.nav_favorite) {
+                switchFragment(new FavoriteFragment());
+                return true;
+            } else if (id == R.id.nav_mine) {
+                switchFragment(new MineFragment());
+                return true;
+            }
+            return false;
         });
 
         // 设置悬浮按钮
@@ -52,39 +73,23 @@ public class MainActivity extends AppCompatActivity {
             new AddFoodFragment().show(getSupportFragmentManager(), "add_food");
         });
 
-        initFoodList();
+        // 默认显示首页
+        if (savedInstanceState == null) {
+            switchFragment(new HomeFragment());
+        }
     }
 
-    private void initFoodList() {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    public void openFoodDetail(FoodItem foodItem) {
+        Intent intent = FoodDetailActivity.newIntent(this, foodItem);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 
-        // 创建测试数据
-        List<FoodItem> testData = new ArrayList<>();
-        testData.add(new FoodItem(
-            null,
-            "山城火锅",
-            "07-15 晚餐",
-            4.5f,
-            "¥98/人",
-            Arrays.asList("#麻辣", "#朋友聚餐")
-        ));
-        testData.add(new FoodItem(
-            null,
-            "星巴克（朝阳门店）",
-            "07-14 下午茶",
-            3.8f,
-            "¥45",
-            Arrays.asList("#咖啡", "#工作间隙")
-        ));
-
-        // 设置适配器
-        FoodCardAdapter adapter = new FoodCardAdapter();
-        adapter.setFoodList(testData);
-        recyclerView.setAdapter(adapter);
-
-        // 设置item间距
-        int spacing = getResources().getDimensionPixelSize(R.dimen.card_spacing);
-        recyclerView.addItemDecoration(new SpaceItemDecoration(spacing));
+    private void switchFragment(Fragment fragment) {
+        getSupportFragmentManager()
+            .beginTransaction()
+            .setCustomAnimations(0, 0)
+            .replace(R.id.container, fragment)
+            .commit();
     }
 } 

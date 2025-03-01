@@ -778,3 +778,278 @@ values-night/themes.xml    // 夜间模式
 2. 注意预览不同设备形状下的显示效果
 3. 生成后检查所有密度下的图标质量
 4. 可能需要清除缓存并重新安装应用
+
+## 2025-02-28 20:00 食物详情页面Fragment开发记录
+
+### 问题描述
+在实现食物详情页面(FoodDetailFragment)时遇到以下问题：
+1. ViewPager2加载图片时出现闪烁
+2. Fragment返回键处理与Activity冲突
+3. 底部按钮点击事件的Toast提示被切换动画遮挡
+
+### 错误原因分析
+1. ViewPager2问题：
+   - 默认的页面预加载机制导致图片加载闪烁
+   - 未设置适当的页面切换动画
+   - 图片加载没有占位图
+
+2. Fragment返回问题：
+   - 未正确处理Fragment的返回栈
+   - Activity和Fragment都在响应返回事件
+   - 返回动画不流畅
+
+3. Toast显示问题：
+   - Toast显示层级低于Fragment切换动画
+   - 动画持续时间过长
+   - Toast位置未优化
+
+### 完整解决方案
+1. ViewPager2优化
+```kotlin
+// FoodDetailFragment.kt
+private fun setupViewPager() {
+    viewPager.apply {
+        // 设置预加载页面数
+        offscreenPageLimit = 1
+        
+        // 自定义页面切换动画
+        setPageTransformer { page, position ->
+            page.apply {
+                val r = 1 - abs(position)
+                page.scaleY = 0.85f + r * 0.15f
+            }
+        }
+    }
+}
+```
+
+2. Fragment返回处理
+```java
+// FoodDetailFragment.java
+@Override
+public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
+    toolbar.setNavigationOnClickListener(v -> {
+        // 使用FragmentManager处理返回
+        requireActivity().getSupportFragmentManager().popBackStack();
+    });
+}
+```
+
+3. Toast显示优化
+```java
+// FoodDetailFragment.java
+private void showToastMessage(String message) {
+    Toast toast = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT);
+    toast.setGravity(Gravity.CENTER, 0, 0);
+    toast.show();
+}
+```
+
+### 采取的措施
+1. ViewPager2配置：
+   - 限制预加载页面数量
+   - 添加平滑的切换动画
+   - 实现图片加载占位图
+
+2. 返回键处理：
+   - 统一使用FragmentManager管理返回栈
+   - 优化Fragment切换动画
+   - 处理边界情况
+
+3. 交互体验：
+   - 调整Toast显示位置和时长
+   - 优化按钮点击反馈
+   - 添加加载状态指示
+
+### 后续优化建议
+1. 性能优化：
+   - 使用Glide预加载图片
+   - 实现ViewPager2的页面回收
+   - 优化Fragment切换动画性能
+
+2. 用户体验：
+   - 添加图片缩放手势
+   - 实现图片保存功能
+   - 优化暗色模式下的显示效果
+
+3. 代码质量：
+   - 提取公共组件
+   - 添加单元测试
+   - 规范化错误处理
+
+### 经验总结
+1. Fragment使用建议：
+   - 合理管理生命周期
+   - 正确处理返回栈
+   - 注意内存泄漏问题
+
+2. UI交互原则：
+   - 保持动画流畅
+   - 提供及时的用户反馈
+   - 处理各种边界情况
+
+3. 开发流程改进：
+   - 先搭建基础框架
+   - 逐步添加功能
+   - 持续优化体验
+
+## 2025-03-01 09:30 单Activity多Fragment架构重构总结
+
+### 架构重构概述
+在过去一周内，我们将TastyLog应用从多Activity架构重构为单Activity多Fragment架构。这一重构主要涉及以下方面：
+
+1. 架构转变：
+   - 从多个独立Activity转向单一MainActivity + 多Fragment模式
+   - 统一了导航和交互逻辑
+   - 简化了应用生命周期管理
+
+2. 界面组织：
+   - MainActivity作为唯一容器，负责Fragment的加载和切换
+   - 使用FragmentManager管理Fragment栈
+   - 实现了平滑的Fragment切换动画
+
+3. 数据流优化：
+   - 统一了数据传递机制，使用Bundle和接口回调
+   - 减少了跨组件通信的复杂性
+   - 提高了数据一致性
+
+### 当前代码结构
+
+#### 1. 核心类设计
+```
+com.example.tastylog/
+├── MainActivity.java            // 唯一的Activity，作为Fragment容器
+├── fragment/
+│   ├── HomeFragment.java        // 首页Fragment，显示食物列表
+│   ├── FoodDetailFragment.java  // 食物详情Fragment
+│   ├── AddFoodFragment.java     // 添加食物Fragment
+│   └── ProfileFragment.java     // 用户资料Fragment
+├── adapter/
+│   ├── FoodCardAdapter.java     // 食物卡片适配器
+│   └── FoodImageAdapter.java    // 食物图片适配器(用于ViewPager2)
+└── model/
+    └── FoodItem.java            // 食物数据模型
+```
+
+#### 2. 布局文件组织
+```
+res/layout/
+├── activity_main.xml            // 主Activity布局，包含Fragment容器
+├── fragment_home.xml            // 首页Fragment布局
+├── fragment_food_detail.xml     // 食物详情Fragment布局
+├── fragment_add_food.xml        // 添加食物Fragment布局
+├── item_food_card.xml           // 食物卡片项布局
+└── item_food_image.xml          // 食物图片项布局(用于ViewPager2)
+```
+
+#### 3. 样式文件结构
+```
+res/values/
+├── styles.xml                   // 通用样式
+├── styles_food_card.xml         // 食物卡片相关样式
+└── themes.xml                   // 应用主题定义
+```
+
+### 实现方法详解
+
+#### Fragment导航实现
+```java
+// MainActivity.java
+private void navigateToFragment(Fragment fragment, boolean addToBackStack) {
+    FragmentTransaction transaction = getSupportFragmentManager()
+        .beginTransaction()
+        .setCustomAnimations(
+            R.anim.slide_in_right,
+            R.anim.slide_out_left,
+            R.anim.slide_in_left,
+            R.anim.slide_out_right
+        )
+        .replace(R.id.fragment_container, fragment);
+    
+    if (addToBackStack) {
+        transaction.addToBackStack(null);
+    }
+    
+    transaction.commit();
+}
+```
+
+#### Fragment间通信
+```java
+// HomeFragment.java
+private void setupRecyclerView() {
+    adapter = new FoodCardAdapter();
+    adapter.setOnItemClickListener(foodItem -> {
+        // 创建详情Fragment并传递数据
+        FoodDetailFragment detailFragment = new FoodDetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("food_item", foodItem);
+        detailFragment.setArguments(args);
+        
+        // 通知Activity切换Fragment
+        ((MainActivity) requireActivity()).navigateToFragment(
+            detailFragment, true);
+    });
+    
+    recyclerView.setAdapter(adapter);
+}
+```
+
+#### 返回键处理
+```java
+// MainActivity.java
+@Override
+public void onBackPressed() {
+    if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+        getSupportFragmentManager().popBackStack();
+    } else {
+        super.onBackPressed();
+    }
+}
+```
+
+### 重构效果评估
+
+1. 性能提升：
+   - 减少了Activity切换开销
+   - 降低了内存占用
+   - 提高了页面切换流畅度
+
+2. 开发效率：
+   - 简化了导航逻辑
+   - 统一了UI交互模式
+   - 减少了重复代码
+
+3. 用户体验：
+   - 更流畅的页面切换动画
+   - 更一致的交互模式
+   - 更快的应用响应速度
+
+### 遇到的挑战与解决方案
+
+1. Fragment生命周期管理：
+   - 问题：Fragment生命周期比Activity更复杂，容易出现状态不一致
+   - 解决：严格遵循Fragment生命周期方法，使用ViewModel分离UI和数据
+
+2. 返回栈管理：
+   - 问题：复杂的Fragment导航容易导致返回栈混乱
+   - 解决：统一使用FragmentManager管理返回栈，明确定义返回行为
+
+3. 数据共享：
+   - 问题：Fragment间数据传递方式多样，容易混乱
+   - 解决：使用ViewModel和LiveData实现数据共享，减少直接依赖
+
+### 后续优化方向
+
+1. 导航组件集成：
+   - 使用Jetpack Navigation组件替代手动Fragment管理
+   - 实现更声明式的导航图定义
+
+2. 依赖注入：
+   - 引入Hilt或Dagger进行依赖注入
+   - 减少组件间的直接依赖
+
+3. 响应式编程：
+   - 扩展LiveData和Flow的使用
+   - 实现更响应式的UI更新机制
