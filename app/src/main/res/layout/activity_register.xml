@@ -22,7 +22,7 @@
 
     <!-- 中心表单卡片 -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_login"
+        android:id="@+id/card_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
@@ -39,19 +39,35 @@
             android:padding="20dp">
 
             <TextView
-                android:layout_width="169dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/pacifico_regular"
-                android:text="FoodJournal"
+                android:text="Register"
                 android:textColor="#FF9800"
                 android:textSize="28sp" />
+
+            <EditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@null"
+                android:hint="用户名"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:textColorHint="#99000000" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#20000000" />
 
             <EditText
                 android:id="@+id/et_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:background="@null"
                 android:hint="邮箱地址"
                 android:inputType="textEmailAddress"
@@ -79,20 +95,33 @@
                 android:layout_height="1dp"
                 android:background="#20000000" />
 
+            <EditText
+                android:id="@+id/et_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@null"
+                android:hint="确认密码"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textColorHint="#99000000" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#20000000" />
 
             <Button
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_register"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="40dp"
                 android:layout_marginTop="30dp"
                 android:backgroundTint="#FF9800"
-                android:text="登录"
-                android:textColor="#FFFFFF" />
+                android:padding="12dp"
+                android:text="注册"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progress_indicator"
@@ -101,21 +130,20 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:indeterminate="true"
-                app:indicatorColor="@color/orange_500"
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/tv_to_register"
+                android:id="@+id/tv_to_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="没有账号？点击注册"
+                android:text="已有账号？点击登录"
                 android:textColor="#FF9800" />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout> 
+</androidx.constraintlayout.widget.ConstraintLayout>

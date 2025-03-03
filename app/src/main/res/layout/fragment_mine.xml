@@ -20,7 +20,9 @@
             android:padding="16dp">
 
             <!-- 用户信息卡片 -->
-            <include layout="@layout/layout_mine_content"/>
+            <include 
+                android:id="@+id/layout_mine_content"
+                layout="@layout/layout_mine_content"/>
 
             <!-- 设置选项卡片 -->
             <com.google.android.material.card.MaterialCardView

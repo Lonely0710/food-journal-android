@@ -22,4 +22,16 @@
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:padding">16dp</item>
     </style>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- 其他主题属性 -->
+        <item name="colorPrimary">@color/orange_500</item>
+        <item name="colorAccent">@color/orange_500</item>
+        <!-- 指示器样式 -->
+        <item name="circularProgressIndicatorStyle">@style/OrangeProgressIndicator</item>
+    </style>
+
+    <style name="OrangeProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorColor">@color/orange_500</item>
+    </style>
 </resources> 

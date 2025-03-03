@@ -27,6 +27,8 @@ import com.example.tastylog.fragment.HomeFragment;
 import com.example.tastylog.fragment.MineFragment;
 import com.example.tastylog.fragment.StatsFragment;
 
+import com.example.tastylog.AppwriteWrapper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 使用 Java 包装类初始化 Appwrite
+        AppwriteWrapper.init(getApplicationContext());
 
         // 设置状态栏颜色
         Window window = getWindow();
