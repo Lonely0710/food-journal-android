@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="100dp"
+    android:viewportWidth="200"
+    android:viewportHeight="100">
+    <!-- 背景网格 -->
+    <path
+        android:strokeWidth="0.5"
+        android:strokeColor="#EEEEEE"
+        android:pathData="M0,20h200 M0,40h200 M0,60h200 M0,80h200
+                         M40,0v100 M80,0v100 M120,0v100 M160,0v100"/>
+    
+    <!-- 折线 -->
+    <path
+        android:strokeWidth="2"
+        android:strokeColor="@color/orange_500"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M20,80 L60,40 L100,60 L140,30 L180,50"/>
+</vector> 

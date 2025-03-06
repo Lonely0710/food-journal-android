@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import io.appwrite.models.Session;
 import io.appwrite.models.User;
@@ -93,5 +94,35 @@ public class AppwriteWrapper {
         }
         
         return future;
+    }
+
+    /**
+     * 用户登出
+     * @param onSuccess 成功回调
+     * @param onError 错误回调
+     */
+    public static void logout(Runnable onSuccess, Consumer<Exception> onError) {
+        try {
+            // 使用回调版本的登出方法
+            Appwrite.INSTANCE.logoutWithCallback(
+                () -> {
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                    return null;
+                },
+                error -> {
+                    if (onError != null) {
+                        onError.accept(error);
+                    }
+                    return null;
+                }
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "调用登出方法失败: " + e.getMessage(), e);
+            if (onError != null) {
+                onError.accept(e);
+            }
+        }
     }
 }

@@ -29,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private TextView tvToLogin;
     private CircularProgressIndicator progressIndicator;
+    private View loadingOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,9 @@ public class RegisterActivity extends AppCompatActivity {
             progressIndicator.setIndeterminate(true);
             progressIndicator.setVisibility(View.GONE);
         }
+        
+        // 初始化控件
+        loadingOverlay = findViewById(R.id.loading_overlay);
         
         // 设置注册按钮点击事件
         btnRegister.setOnClickListener(v -> {
@@ -112,12 +116,13 @@ public class RegisterActivity extends AppCompatActivity {
     }
     
     private void setLoading(boolean isLoading) {
-        if (isLoading) {
-            btnRegister.setEnabled(false);
-            progressIndicator.setVisibility(View.VISIBLE);
-        } else {
-            btnRegister.setEnabled(true);
-            progressIndicator.setVisibility(View.GONE);
-        }
+        loadingOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        // 禁用或启用输入控件
+        etEmail.setEnabled(!isLoading);
+        etPassword.setEnabled(!isLoading);
+        etConfirmPassword.setEnabled(!isLoading);
+        etName.setEnabled(!isLoading);
+        btnRegister.setEnabled(!isLoading);
+        tvToLogin.setEnabled(!isLoading);
     }
 }

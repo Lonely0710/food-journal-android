@@ -455,6 +455,39 @@ object Appwrite {
         }
     }
 
+    // 登出 - 回调版本
+    fun logoutWithCallback(onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        appwriteScope.launch {
+            try {
+                Log.d("Appwrite", "开始登出")
+                account.deleteSession("current")
+                Log.d("Appwrite", "登出成功")
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "登出失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 登出 - 协程版本
+    suspend fun logout(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                account.deleteSession("current")
+                true
+            } catch (e: Exception) {
+                Log.e("Appwrite", "登出失败: ${e.message}", e)
+                false
+            }
+        }
+    }
+
     fun getDatabaseId() = DATABASE_ID
     fun getUsersCollectionId() = USERS_COLLECTION_ID
 }

@@ -34,4 +34,37 @@
     <style name="OrangeProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
         <item name="indicatorColor">@color/orange_500</item>
     </style>
+
+    <!-- 对话框样式 -->
+    <style name="AlertDialog.AppTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/orange_500</item>
+        <item name="colorSurface">@android:color/white</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/AlertDialog.AppTheme.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/AlertDialog.AppTheme.Body.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AlertDialog.AppTheme.PositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AlertDialog.AppTheme.NegativeButton</item>
+    </style>
+
+    <style name="AlertDialog.AppTheme.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AlertDialog.AppTheme.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">#757575</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- 确定按钮样式 -->
+    <style name="AlertDialog.AppTheme.PositiveButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/red_500</item>
+        <item name="rippleColor">@color/red_200</item>
+    </style>
+
+    <!-- 取消按钮样式 -->
+    <style name="AlertDialog.AppTheme.NegativeButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/orange_500</item>
+        <item name="rippleColor">@color/orange_200</item>
+    </style>
 </resources> 

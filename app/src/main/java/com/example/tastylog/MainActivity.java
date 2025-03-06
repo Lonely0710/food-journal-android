@@ -54,26 +54,31 @@ public class MainActivity extends AppCompatActivity {
 
         // 设置底部导航
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        FloatingActionButton fab = findViewById(R.id.fab_add);
+
         bottomNav.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
                 switchFragment(new HomeFragment());
+                fab.show();
                 return true;
             } else if (id == R.id.nav_stats) {
                 switchFragment(new StatsFragment());
+                fab.hide();
                 return true;
             } else if (id == R.id.nav_favorite) {
                 switchFragment(new FavoriteFragment());
+                fab.hide();
                 return true;
             } else if (id == R.id.nav_mine) {
                 switchFragment(new MineFragment());
+                fab.hide();
                 return true;
             }
             return false;
         });
 
         // 设置悬浮按钮
-        FloatingActionButton fab = findViewById(R.id.fab_add);
         fab.setOnClickListener(v -> {
             new AddFoodFragment().show(getSupportFragmentManager(), "add_food");
         });
@@ -81,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         // 默认显示首页
         if (savedInstanceState == null) {
             switchFragment(new HomeFragment());
+            fab.show();
         }
     }
 

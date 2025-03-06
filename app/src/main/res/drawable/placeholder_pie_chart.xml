@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- 饼图各部分 -->
+    <path
+        android:fillColor="@color/orange_500"
+        android:pathData="M50,50 L50,0 A50,50 0 0,1 85,15 Z"/>
+    <path
+        android:fillColor="@color/orange_300"
+        android:pathData="M50,50 L85,15 A50,50 0 0,1 100,50 Z"/>
+    <path
+        android:fillColor="@color/orange_200"
+        android:pathData="M50,50 L100,50 A50,50 0 0,1 85,85 Z"/>
+    <path
+        android:fillColor="@color/gray_300"
+        android:pathData="M50,50 L85,85 A50,50 0 0,1 50,100 Z"/>
+</vector> 

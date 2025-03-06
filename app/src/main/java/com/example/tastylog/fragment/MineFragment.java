@@ -1,5 +1,6 @@
 package com.example.tastylog.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,6 +22,9 @@ import com.example.tastylog.Appwrite;
 import com.example.tastylog.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.example.tastylog.AppwriteWrapper;
+import com.example.tastylog.LoginActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -197,6 +202,40 @@ public class MineFragment extends BaseFragment {
         btnThemeColor.setOnClickListener(v -> {
             // TODO: 实现主题颜色选择
             Toast.makeText(requireContext(), "主题颜色选择功能开发中", Toast.LENGTH_SHORT).show();
+        });
+
+        // 添加登出按钮点击事件
+        View logoutButton = view.findViewById(R.id.ll_logout);
+        logoutButton.setOnClickListener(v -> {
+            // 显示确认对话框
+            new MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog_AppTheme)
+                .setTitle("退出登录")
+                .setMessage("确定要退出登录吗？")
+                .setPositiveButton("确定", (dialog, which) -> {
+                    // 显示加载状态
+                    showLoadingState();
+                    
+                    // 调用登出方法
+                    AppwriteWrapper.logout(
+                        // 成功回调
+                        () -> {
+                            // 跳转到登录页面
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.slide_down_out);
+                            getActivity().finish();
+                        },
+                        // 失败回调
+                        e -> {
+                            showLoadedState(tvUserName.getText().toString());
+                            Toast.makeText(getContext(), "登出失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    );
+                })
+                .setNegativeButton("取消", null)
+                .setBackground(getResources().getDrawable(R.drawable.bg_dialog))
+                .show();
         });
     }
 } 
