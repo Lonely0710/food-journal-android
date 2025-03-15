@@ -51,10 +51,13 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") 
 
     implementation("com.github.bumptech.glide:glide:4.12.0")
-    
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.squareup.picasso:picasso:2.8")
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0") {
         exclude(group = "com.android.support")
     }
+    // 添加Navigation依赖
+    implementation("androidx.navigation:navigation-fragment:2.5.3")
+    implementation("androidx.navigation:navigation-ui:2.5.3")
 }

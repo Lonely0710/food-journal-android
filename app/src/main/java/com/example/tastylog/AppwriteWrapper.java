@@ -6,15 +6,30 @@ import android.util.Log;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.HashMap;
 
 import io.appwrite.models.Session;
 import io.appwrite.models.User;
+import io.appwrite.models.Document;
 
 /**
  * Java 包装类，访问 Kotlin 的 Appwrite 对象
  */
 public class AppwriteWrapper {
     private static final String TAG = "AppwriteWrapper";
+    private static AppwriteWrapper instance;
+    
+    // 私有构造函数，防止外部实例化
+    private AppwriteWrapper() {
+    }
+    
+    // 单例模式获取实例
+    public static synchronized AppwriteWrapper getInstance() {
+        if (instance == null) {
+            instance = new AppwriteWrapper();
+        }
+        return instance;
+    }
     
     /**
      * 初始化 Appwrite 客户端
@@ -124,5 +139,105 @@ public class AppwriteWrapper {
                 onError.accept(e);
             }
         }
+    }
+
+    /**
+     * 获取用户食物列表
+     * @param userId
+     * @param onSuccess
+     * @param onError
+     */
+    public void getUserFoodItems(
+        String userId,
+        Consumer<java.util.List<Document<Map<String, Object>>>> onSuccess,
+        Consumer<Exception> onError
+    ) {
+        Appwrite.INSTANCE.getUserFoodItemsWithCallback(
+            userId,
+            documents -> {
+                onSuccess.accept(documents);
+                return null;
+            },
+            error -> {
+                onError.accept(error);
+                return null;
+            }
+        );
+    }
+
+    /**
+     * 上传文件
+     * @param bucketId
+     * @param fileName
+     * @param fileBytes
+     * @param onSuccess
+     * @param onError
+     */
+    public void uploadFile(
+        String bucketId,
+        String fileName,
+        byte[] fileBytes,
+        Consumer<String> onSuccess,
+        Consumer<Exception> onError
+    ) {
+        Appwrite.INSTANCE.uploadFileWithCallback(
+            bucketId,
+            fileName,
+            fileBytes,
+            fileId -> {
+                onSuccess.accept(fileId);
+                return null;
+            },
+            error -> {
+                onError.accept(error);
+                return null;
+            }
+        );
+    }
+    
+    // 获取文件预览URL
+    public String getFilePreviewUrl(String bucketId, String fileId) {
+        return Appwrite.INSTANCE.getFilePreviewUrl(bucketId, fileId);
+    }
+    
+    // 获取当前登录用户ID
+    public String getCurrentUserId() {
+        return Appwrite.INSTANCE.getCurrentUserId();
+    }
+
+    /**
+     * 添加食物记录
+     */
+    public void addFoodItem(
+        String userId,
+        String title,
+        String time,
+        String imgUrl,
+        float rating,
+        double price,
+        String tag,
+        String content,
+        Consumer<Document<Map<String, Object>>> onSuccess,
+        Consumer<Exception> onError
+    ) {
+        // 调用修改后的Kotlin方法，现在包含content参数
+        Appwrite.INSTANCE.addFoodItemWithCallback(
+            userId,
+            title,
+            time,
+            imgUrl,
+            (double) rating,
+            price,
+            tag,
+            content, // 传递content参数
+            document -> {
+                onSuccess.accept(document);
+                return null;
+            },
+            error -> {
+                onError.accept(error);
+                return null;
+            }
+        );
     }
 }

@@ -1383,7 +1383,6 @@ createInitialFoodListForUser(userId)
 2. 实现记住密码功能
 3. 添加社交账号登录选项
 4. 优化注册流程的错误提示
-```
 
 ## 2025-03-06 21:00 UI优化与功能扩展更新
 
@@ -1492,3 +1491,273 @@ new MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialog_AppTheme)
    - 先搭建基础框架
    - 逐步完善功能
    - 持续优化体验
+
+## 2025-03-11 至 2025-03-15 数据库连接与UI优化
+
+### 主要开发内容
+
+#### 一、数据库连接实现
+
+1. **主页面food_list数据展示**
+   - 实现FoodRepository与Appwrite数据库连接
+   - 优化列表加载机制，添加加载状态
+   - 实现数据实时刷新
+   ```java
+   // 使用LiveData通知UI更新
+   private final MutableLiveData<List<FoodItem>> foodItemsLiveData = new MutableLiveData<>();
+   
+   // 从Appwrite获取数据
+   public void fetchFoodItems() {
+       appwriteDatabase.listDocuments(
+           collectionId,
+           listDocuments -> {
+               List<FoodItem> items = new ArrayList<>();
+               for (Document<Map<String, Object>> doc : listDocuments.getDocuments()) {
+                   items.add(documentToFoodItem(doc));
+               }
+               foodItemsLiveData.postValue(items);
+           },
+           error -> Log.e(TAG, "Error fetching food items: " + error.getMessage())
+       );
+   }
+   ```
+
+2. **添加页面功能完善**
+   - 整合表单数据验证
+   - 实现图片上传至Appwrite Storage
+   - 添加进度指示器，优化用户体验
+   ```java
+   private void uploadImage(String filePath, Consumer<String> onSuccess) {
+       showLoading("正在上传图片...");
+       File imageFile = new File(filePath);
+       
+       // 图片压缩处理
+       Bitmap compressedBitmap = compressImage(imageFile);
+       File compressedFile = saveCompressedImage(compressedBitmap);
+       
+       // 上传到Appwrite
+       storage.createFile(
+           bucketId, 
+           "unique_" + UUID.randomUUID().toString(), 
+           compressedFile,
+           fileResponse -> {
+               hideLoading();
+               String fileUrl = getFileUrl(fileResponse.getId());
+               onSuccess.accept(fileUrl);
+           },
+           error -> {
+               hideLoading();
+               showError("图片上传失败：" + error.getMessage());
+           }
+       );
+   }
+   ```
+
+3. **详情页面展示优化**
+   - 实现ViewPager2图片展示
+   - 添加PhotoView支持缩放手势
+   - 完善数据加载与错误处理
+   - 添加分享和删除功能
+
+#### 二、技术选型与优化
+
+1. **图片展示方案**
+   - 选择Glide作为图片加载库，原因：
+     * 内存管理效率高
+     * 缓存机制完善
+     * API简洁易用
+   - 结合PhotoView实现图片缩放功能
+   ```java
+   // FoodImageAdapter中的图片加载实现
+   Glide.with(holder.itemView.getContext())
+       .load(imageUrl)
+       .placeholder(R.drawable.placeholder_food)
+       .error(R.drawable.placeholder_food)
+       .centerCrop()
+       .into(holder.photoView);
+   ```
+
+2. **图片压缩策略**
+   - 客户端上传前压缩，减少带宽占用
+   - 采用质量和尺寸双重压缩策略
+   - 根据不同场景动态调整压缩参数
+   ```java
+   private Bitmap compressImage(File imageFile) {
+       // 读取原图
+       Bitmap originalBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+       
+       // 计算合适的尺寸比例
+       int maxDimension = 1200; // 最大边长
+       float scale = Math.min(
+           (float) maxDimension / originalBitmap.getWidth(),
+           (float) maxDimension / originalBitmap.getHeight()
+       );
+       
+       // 若图片尺寸已经小于目标值，则不进行尺寸压缩
+       if (scale >= 1) {
+           return compressByQuality(originalBitmap, 85);
+       }
+       
+       // 尺寸压缩
+       int targetWidth = Math.round(originalBitmap.getWidth() * scale);
+       int targetHeight = Math.round(originalBitmap.getHeight() * scale);
+       Bitmap resizedBitmap = Bitmap.createScaledBitmap(
+           originalBitmap, targetWidth, targetHeight, true);
+       
+       // 质量压缩
+       return compressByQuality(resizedBitmap, 85);
+   }
+   
+   private Bitmap compressByQuality(Bitmap bitmap, int quality) {
+       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+       bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+       byte[] byteArray = outputStream.toByteArray();
+       return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+   }
+   ```
+
+#### 三、UI微调和统一
+
+1. **设计规范统一**
+   - 颜色方案统一为主题色橙色系
+   - 统一字体大小规范：标题18sp，正文16sp，次要信息14sp
+   - 统一圆角大小：卡片8dp，按钮4dp
+   - 统一间距规范：16dp主间距，8dp次要间距
+
+2. **交互优化**
+   - 添加Loading状态统一处理
+   - 优化错误提示风格
+   - 增加页面过渡动画
+   - 统一按钮点击效果
+   ```java
+   // 统一的加载对话框实现
+   private void showLoading(String message) {
+       if (loadingDialog == null) {
+           loadingDialog = new MaterialAlertDialogBuilder(requireContext())
+               .setView(R.layout.dialog_loading)
+               .setCancelable(false)
+               .create();
+       }
+       TextView tvMessage = loadingDialog.findViewById(R.id.tv_loading_message);
+       if (tvMessage != null) {
+           tvMessage.setText(message);
+       }
+       if (!loadingDialog.isShowing()) {
+           loadingDialog.show();
+       }
+   }
+   ```
+
+#### 四、主要问题与解决方案
+
+1. **Appwrite数据库匹配问题**
+
+   **问题描述：**
+   - Appwrite返回的数据结构与应用模型不匹配
+   - 数据类型不一致导致解析错误，特别是评分字段
+   - 图片URL需要额外处理才能正确加载
+
+   **解决方案：**
+   - 实现统一的数据转换方法，处理各种类型情况
+   ```java
+   private FoodItem documentToFoodItem(Document<Map<String, Object>> document) {
+       FoodItem item = new FoodItem();
+       
+       // 设置ID
+       item.setId(document.getId());
+       
+       Map<String, Object> data = document.getData();
+       
+       // 设置标题
+       if (data.containsKey("title")) {
+           item.setTitle((String) data.get("title"));
+       }
+       
+       // 处理评分 - 支持多种数据类型
+       if (data.containsKey("rating")) {
+           Object ratingObj = data.get("rating");
+           if (ratingObj instanceof Double) {
+               item.setRating(((Double) ratingObj).floatValue());
+           } else if (ratingObj instanceof Integer) {
+               item.setRating(((Integer) ratingObj).floatValue());
+           } else if (ratingObj instanceof Long) {
+               item.setRating(((Long) ratingObj).floatValue());
+           } else if (ratingObj instanceof String) {
+               try {
+                   item.setRating(Float.parseFloat((String) ratingObj));
+               } catch (NumberFormatException e) {
+                   item.setRating(0.0f); // 默认值
+               }
+           } else {
+               item.setRating(0.0f); // 默认值
+           }
+       }
+       
+       // 其他字段处理...
+       
+       return item;
+   }
+   ```
+
+   - 添加数据验证和默认值处理
+   - 使用自定义序列化器处理特殊类型
+
+2. **图片显示速度问题**
+
+   **问题描述：**
+   - 大图片加载缓慢，影响用户体验
+   - 高分辨率图片导致内存占用过高
+   - 列表滚动时出现卡顿现象
+
+   **解决方案：**
+   - 实现多级图片压缩策略：
+     1. 上传前客户端压缩
+     2. 根据不同显示场景使用不同尺寸
+     3. Glide加载时配置合适的变换
+
+   - 优化Glide配置，添加磁盘缓存
+   ```java
+   // 配置Glide缓存策略
+   RequestOptions options = new RequestOptions()
+       .diskCacheStrategy(DiskCacheStrategy.ALL)
+       .override(Target.SIZE_ORIGINAL)
+       .format(DecodeFormat.PREFER_RGB_565) // 减少内存占用
+       .priority(Priority.HIGH);
+       
+   Glide.with(context)
+       .load(imageUrl)
+       .apply(options)
+       .transition(DrawableTransitionOptions.withCrossFade())
+       .into(imageView);
+   ```
+   
+   - 实现图片预加载机制
+   ```java
+   // 预加载下一页图片
+   private void preloadNextImages(List<String> imageUrls, int startPosition) {
+       int preloadCount = 3; // 预加载数量
+       for (int i = startPosition; i < Math.min(startPosition + preloadCount, imageUrls.size()); i++) {
+           Glide.with(context)
+               .load(imageUrls.get(i))
+               .diskCacheStrategy(DiskCacheStrategy.ALL)
+               .preload();
+       }
+   }
+   ```
+
+### 总结与经验
+
+1. **数据层设计经验**
+   - 应用数据模型应考虑与后端数据结构的兼容性
+   - 添加足够的数据验证和类型转换处理
+   - 异步数据加载应配合UI状态管理
+
+2. **性能优化经验**
+   - 图片处理是移动应用性能瓶颈之一，需要综合考虑
+   - 合理的缓存策略能显著提升用户体验
+   - 在开发早期就引入性能监控机制
+
+3. **UI/UX设计经验**
+   - 统一的设计语言对整体用户体验至关重要
+   - 加载状态和错误处理需要贯穿应用各处
+   - 微小的交互细节能极大提升应用品质感

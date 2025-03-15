@@ -67,4 +67,11 @@
         <item name="android:textColor">@color/orange_500</item>
         <item name="rippleColor">@color/orange_200</item>
     </style>
+
+    <style name="ToolbarTitleStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">cursive</item>
+    </style>
 </resources> 

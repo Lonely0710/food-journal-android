@@ -1,14 +1,18 @@
 package com.example.tastylog.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.tastylog.R;
 import com.example.tastylog.model.FoodItem;
 import com.google.android.material.chip.Chip;
@@ -19,34 +23,19 @@ import java.util.List;
 
 public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHolder> {
     private List<FoodItem> foodList = new ArrayList<>();
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListener listener;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivFood;
-        TextView tvTitle;
-        TextView tvTime;
-        TextView tvRating;
-        TextView tvPrice;
-        ChipGroup chipGroup;
+    public interface OnItemClickListener {
+        void onItemClick(FoodItem foodItem);
+    }
 
-        ViewHolder(View view) {
-            super(view);
-            ivFood = view.findViewById(R.id.iv_food);
-            tvTitle = view.findViewById(R.id.tv_title);
-            tvTime = view.findViewById(R.id.tv_time);
-            tvRating = view.findViewById(R.id.tv_rating);
-            tvPrice = view.findViewById(R.id.tv_price);
-            chipGroup = view.findViewById(R.id.chip_group);
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
-            view.setOnClickListener(v -> {
-                if (onItemClickListener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        onItemClickListener.onItemClick(foodList.get(position));
-                    }
-                }
-            });
-        }
+    public void setFoodList(List<FoodItem> foodList) {
+        this.foodList = foodList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -59,22 +48,57 @@ public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        FoodItem item = foodList.get(position);
+        FoodItem foodItem = foodList.get(position);
         
-        // 设置数据
-        holder.tvTitle.setText(item.getTitle());
-        holder.tvTime.setText(item.getTime());
-        holder.tvRating.setText(String.valueOf(item.getRating()));
-        holder.tvPrice.setText(item.getPrice());
+        holder.tvTitle.setText(foodItem.getTitle());
+        holder.tvTime.setText(foodItem.getTime());
         
-        // 设置标签
+        float rating = foodItem.getRating();
+        if (rating < 0) rating = 0;
+        if (rating > 5) rating = 5;
+        
+        if (holder.ratingBar != null) {
+            holder.ratingBar.setRating(rating);
+        }
+        
+        if (holder.tvRating != null) {
+            holder.tvRating.setText(String.format("%.1f", rating));
+        }
+        
+        String price = foodItem.getPrice();
+        if (price == null || price.isEmpty() || price.equals("¥")) {
+            price = "¥0";
+        }
+        
+        if (holder.tvPrice != null) {
+            holder.tvPrice.setText(price);
+        }
+        
         holder.chipGroup.removeAllViews();
-        for (String tag : item.getTags()) {
+        for (String tag : foodItem.getTags()) {
             Chip chip = new Chip(holder.chipGroup.getContext());
             chip.setText(tag);
-            chip.setTextAppearance(R.style.FoodCard_Tag);
+            chip.setChipBackgroundColorResource(R.color.colorChipBackground);
+            chip.setTextColor(ContextCompat.getColor(holder.chipGroup.getContext(), R.color.colorChipText));
             holder.chipGroup.addView(chip);
         }
+        
+        if (!TextUtils.isEmpty(foodItem.getImageUrl())) {
+            Glide.with(holder.ivFood.getContext())
+                .load(foodItem.getImageUrl())
+                .placeholder(R.drawable.placeholder_food)
+                .error(R.drawable.error_food)
+                .centerCrop()
+                .into(holder.ivFood);
+        } else {
+            holder.ivFood.setImageResource(R.drawable.placeholder_food);
+        }
+        
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(foodItem);
+            }
+        });
     }
 
     @Override
@@ -82,16 +106,24 @@ public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHo
         return foodList.size();
     }
 
-    public void setFoodList(List<FoodItem> foodList) {
-        this.foodList = foodList;
-        notifyDataSetChanged();
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(FoodItem foodItem);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivFood;
+        TextView tvTitle;
+        TextView tvTime;
+        RatingBar ratingBar;
+        TextView tvRating;
+        TextView tvPrice;
+        ChipGroup chipGroup;
+        
+        ViewHolder(View itemView) {
+            super(itemView);
+            ivFood = itemView.findViewById(R.id.iv_food);
+            tvTitle = itemView.findViewById(R.id.tv_title);
+            tvTime = itemView.findViewById(R.id.tv_time);
+            ratingBar = itemView.findViewById(R.id.rating_bar);
+            tvRating = itemView.findViewById(R.id.tv_rating);
+            tvPrice = itemView.findViewById(R.id.tv_price);
+            chipGroup = itemView.findViewById(R.id.chip_group);
+        }
     }
 } 

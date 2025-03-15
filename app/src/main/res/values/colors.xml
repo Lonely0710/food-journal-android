@@ -14,4 +14,8 @@
     <color name="gray_300">#E0E0E0</color>
     <color name="red_500">#FF4F4F</color>
     <color name="red_200">#EF9A9A</color>
+    <color name="colorChipBackground">#F0F0F0</color>
+    <color name="colorChipText">#333333</color>
+    <color name="green_500">#4CAF50</color>
+    <color name="blue_500">#2196F3</color>
 </resources>

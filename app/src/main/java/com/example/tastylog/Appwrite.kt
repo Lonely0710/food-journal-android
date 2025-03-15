@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 import kotlin.concurrent.timer
 import java.net.URLEncoder
+import com.example.tastylog.model.FoodItem
 
 object Appwrite {
     lateinit var client: Client
@@ -346,22 +347,35 @@ object Appwrite {
     }
     
     // 将 Document 转换为 FoodItem - 辅助方法
-    fun documentToFoodItem(document: Document<Map<String, Any>>): com.example.tastylog.model.FoodItem {
-        val data = document.data
+    private fun documentToFoodItem(document: Document<Map<String, Any>>): FoodItem {
+        val foodItem = FoodItem() // 使用默认构造函数
         
-        // 使用位置参数调用 Java 构造函数
-        return com.example.tastylog.model.FoodItem(
-            data["img_url"] as? String ?: "",          // imageUrl
-            data["title"] as? String ?: "",            // title
-            data.getOrDefault("time", "") as String,   // time
-            (data["rating"] as? Number)?.toFloat() ?: 0f, // rating
-            (data["price"] as? Number)?.toString() ?: "0", // price
-            listOf(data["tag"] as? String ?: "")       // tag
-        )
+        // 使用setter方法设置属性
+        foodItem.setId(document.data["food_id"] as? String ?: "")
+        foodItem.setTitle(document.data["title"] as? String ?: "")
+        foodItem.setTime(document.data["time"] as? String ?: "")
+        foodItem.setRating((document.data["rating"] as? Double)?.toFloat() ?: 0f)
+        
+        // 处理价格 - 数据库中是Double类型，转换为String
+        val priceValue = document.data["price"] as? Double
+        foodItem.setPrice(if (priceValue != null) "¥$priceValue" else "")
+        
+        // 处理标签 - 数据库中是单个tag字段，而不是tags列表
+        val tag = document.data["tag"] as? String
+        if (!tag.isNullOrEmpty()) {
+            val tags = ArrayList<String>()
+            tags.add(tag)
+            foodItem.setTags(tags) // 使用setter方法
+        }
+        
+        // 处理图片URL
+        foodItem.setImageUrl(document.data["img_url"] as? String ?: "")
+        
+        return foodItem
     }
 
     // 获取并转换食物列表 - 协程版本
-    suspend fun getUserFoodItemsList(userId: String): List<com.example.tastylog.model.FoodItem> {
+    suspend fun getUserFoodItemsList(userId: String): List<FoodItem> {
         val documents = getUserFoodItems(userId)
         return documents.map { documentToFoodItem(it) }
     }
@@ -490,4 +504,145 @@ object Appwrite {
 
     fun getDatabaseId() = DATABASE_ID
     fun getUsersCollectionId() = USERS_COLLECTION_ID
+
+    // 添加获取当前用户ID的方法，供Java代码调用
+    fun getCurrentUserId(): String {
+        var userId = ""
+        runBlocking {
+            try {
+                val session = account.get()
+                userId = session.id
+            } catch (e: Exception) {
+                Log.e("Appwrite", "获取当前用户ID失败: ${e.message}", e)
+            }
+        }
+        return userId
+    }
+
+    // 添加上传文件的回调方法，供Java代码调用
+    fun uploadFileWithCallback(
+        bucketId: String,
+        fileName: String,
+        fileBytes: ByteArray,
+        onSuccess: (String) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        appwriteScope.launch {
+            try {
+                // 添加MIME类型检测
+                val mimeType = getMimeType(fileName)
+                
+                val file = storage.createFile(
+                    bucketId,
+                    ID.unique(),
+                    InputFile.fromBytes(
+                        fileBytes,
+                        fileName,
+                        mimeType // 使用检测到的MIME类型
+                    )
+                )
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess(file.id)
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "上传文件失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 添加一个辅助方法来根据文件名确定MIME类型
+    private fun getMimeType(fileName: String): String {
+        return when {
+            fileName.endsWith(".jpg", ignoreCase = true) || 
+            fileName.endsWith(".jpeg", ignoreCase = true) -> "image/jpeg"
+            fileName.endsWith(".png", ignoreCase = true) -> "image/png"
+            fileName.endsWith(".gif", ignoreCase = true) -> "image/gif"
+            fileName.endsWith(".webp", ignoreCase = true) -> "image/webp"
+            fileName.endsWith(".bmp", ignoreCase = true) -> "image/bmp"
+            // 默认使用通用二进制类型
+            else -> "application/octet-stream"
+        }
+    }
+
+    // 获取文件预览URL
+    fun getFilePreviewUrl(bucketId: String, fileId: String): String {
+        return "${client.endpoint}/storage/buckets/$bucketId/files/$fileId/preview?project=$PROJECT_ID"
+    }
+
+    // 添加获取用户食物列表的回调方法，供Java代码调用
+    fun getUserFoodItemsWithCallback(
+        userId: String,
+        onSuccess: (List<Document<Map<String, Any>>>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        appwriteScope.launch {
+            try {
+                val response = databases.listDocuments(
+                    DATABASE_ID,
+                    FOOD_LIST_COLLECTION_ID,
+                    listOf(
+                        io.appwrite.Query.equal("user_id", userId)
+                    )
+                )
+                withContext(Dispatchers.Main) {
+                    onSuccess(response.documents)
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "获取用户食物列表失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 添加创建食物记录的回调方法，供Java代码调用
+    fun addFoodItemWithCallback(
+        userId: String,
+        title: String,
+        time: String,
+        imgUrl: String,
+        rating: Double,
+        price: Double,
+        tag: String,
+        content: String,
+        onSuccess: (Document<Map<String, Any>>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        appwriteScope.launch {
+            try {
+                val data = mapOf(
+                    "food_id" to ID.unique(),
+                    "user_id" to userId,
+                    "title" to title,
+                    "time" to time,
+                    "rating" to rating,
+                    "price" to price,
+                    "img_url" to imgUrl,
+                    "tag" to tag,
+                    "content" to content
+                )
+                
+                val document = databases.createDocument(
+                    DATABASE_ID,
+                    FOOD_LIST_COLLECTION_ID,
+                    ID.unique(),
+                    data
+                )
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess(document)
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "创建食物记录失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
 }

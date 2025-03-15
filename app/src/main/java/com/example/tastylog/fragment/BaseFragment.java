@@ -19,7 +19,9 @@ public abstract class BaseFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         if (toolbar != null) {
             TextView titleView = toolbar.findViewById(R.id.toolbar_title);
-            titleView.setText(getToolbarTitle());
+            if (titleView != null) {
+                titleView.setText(getToolbarTitle());
+            }
         }
     }
     

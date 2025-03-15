@@ -94,6 +94,16 @@
 
                 <!-- 动态添加标签 -->
             </com.google.android.material.chip.ChipGroup>
+
+            <!-- 确保RatingBar组件正确定义 -->
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.1"
+                android:isIndicator="true"/>
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView> 

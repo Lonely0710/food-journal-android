@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tastylog.R;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,24 @@ public class FoodImageAdapter extends RecyclerView.Adapter<FoodImageAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // TODO: 使用图片加载库加载图片
-        holder.photoView.setImageResource(R.drawable.placeholder_food);
+        if (imageUrls != null && imageUrls.size() > 0 && position < imageUrls.size()) {
+            String imageUrl = imageUrls.get(position);
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                // 使用Glide加载图片
+                Glide.with(holder.itemView.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.placeholder_food)
+                    .error(R.drawable.placeholder_food)
+                    .centerCrop()
+                    .into(holder.photoView);
+            } else {
+                // 如果URL为空，显示占位图
+                holder.photoView.setImageResource(R.drawable.placeholder_food);
+            }
+        } else {
+            // 没有图片时显示占位图
+            holder.photoView.setImageResource(R.drawable.placeholder_food);
+        }
     }
 
     @Override
@@ -46,7 +63,7 @@ public class FoodImageAdapter extends RecyclerView.Adapter<FoodImageAdapter.View
     }
 
     public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
+        this.imageUrls = (imageUrls != null) ? imageUrls : new ArrayList<>();
         notifyDataSetChanged();
     }
 } 

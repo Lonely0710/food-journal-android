@@ -15,7 +15,7 @@ public class FoodDetailActivity extends AppCompatActivity {
 
     public static Intent newIntent(Context context, FoodItem foodItem) {
         Intent intent = new Intent(context, FoodDetailActivity.class);
-        intent.putExtra(EXTRA_FOOD_ITEM, foodItem);
+        intent.putExtra(EXTRA_FOOD_ITEM, (java.io.Serializable) foodItem);
         return intent;
     }
 
@@ -23,6 +23,9 @@ public class FoodDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_detail);
+
+        // 设置状态栏颜色
+        getWindow().setStatusBarColor(getResources().getColor(R.color.orange_500));
 
         if (savedInstanceState == null) {
             FoodItem foodItem = getIntent().getParcelableExtra(EXTRA_FOOD_ITEM);
@@ -33,5 +36,19 @@ public class FoodDetailActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .commit();
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        // 添加返回动画
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // 系统返回键也使用相同动画
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 } 
