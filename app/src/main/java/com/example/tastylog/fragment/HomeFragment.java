@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.util.Log;
+import com.example.tastylog.utils.FragmentUtils;
 
 public class HomeFragment extends BaseFragment {
 
@@ -85,13 +87,6 @@ public class HomeFragment extends BaseFragment {
             }
         });
         
-        // 设置添加按钮点击事件
-        btnAddFood.setOnClickListener(v -> {
-            // 跳转到添加食物页面
-            // 这里可以根据您的导航逻辑进行修改
-            // 例如：navController.navigate(R.id.action_homeFragment_to_addFoodFragment);
-        });
-        
         return view;
     }
 
@@ -136,13 +131,11 @@ public class HomeFragment extends BaseFragment {
 
             @Override
             public void onError(Exception e) {
-                requireActivity().runOnUiThread(() -> {
-                    // 隐藏加载动画
-                    hideLoading();
-                    
-                    // 显示错误提示
+                FragmentUtils.safeUIAction(HomeFragment.this, () -> {
+                    loadingAnimation.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
                     Toast.makeText(requireContext(), "加载数据失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                }, "HomeFragment");
             }
         });
     }

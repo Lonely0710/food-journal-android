@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 圆形背景 -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FF5722" /> <!-- 橙色背景 -->
+            <size android:width="36dp" android:height="36dp" />
+            <stroke android:color="#FFFFFF" android:width="2dp" /> <!-- 白色边框 -->
+        </shape>
+    </item>
+    
+    <!-- 刀叉图标 -->
+    <item android:drawable="@drawable/food_marker"
+          android:gravity="center"
+          android:width="24dp"
+          android:height="24dp" />
+</layer-list> 

@@ -140,35 +140,6 @@ public class FoodRepository {
         return json;
     }
 
-    // 测试数据
-    private List<FoodItem> getTestData() {
-        List<FoodItem> foodItems = new ArrayList<>();
-        
-        // 添加测试数据
-        FoodItem item1 = new FoodItem();
-        item1.setTitle("香辣小龙虾");
-        item1.setTime("2023-03-15");
-        item1.setRating(4.5f);
-        item1.setPrice("¥128");
-        item1.getTags().add("辣");
-        item1.getTags().add("海鲜");
-        item1.setImageUrl("https://example.com/image1.jpg");
-        
-        FoodItem item2 = new FoodItem();
-        item2.setTitle("清蒸鲈鱼");
-        item2.setTime("2023-03-10");
-        item2.setRating(4.0f);
-        item2.setPrice("¥98");
-        item2.getTags().add("清淡");
-        item2.getTags().add("海鲜");
-        item2.setImageUrl("https://example.com/image2.jpg");
-        
-        foodItems.add(item1);
-        foodItems.add(item2);
-        
-        return foodItems;
-    }
-
     // 从Appwrite获取用户的食物记录
     private void fetchFoodItemsFromAppwrite(String userId, FoodListCallback callback) {
         // 调用Appwrite.kt中的方法
@@ -290,8 +261,17 @@ public class FoodRepository {
         }
         
         // 添加读取content字段
-        String content = (String) data.getOrDefault("content", "");
-        item.setContent(content);
+        if (data.containsKey("content")) {
+            item.setContent((String) data.get("content"));
+        }
+        
+        // 设置位置信息 - 直接从location字段读取
+        if (data.containsKey("location")) {
+            item.setLocation((String) data.get("location"));
+            Log.d(TAG, "读取到位置信息: " + item.getTitle() + " -> " + item.getLocation());
+        } else {
+            Log.w(TAG, "数据中没有location字段: " + item.getTitle());
+        }
         
         return item;
     }

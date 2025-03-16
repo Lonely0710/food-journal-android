@@ -60,4 +60,7 @@ dependencies {
     // 添加Navigation依赖
     implementation("androidx.navigation:navigation-fragment:2.5.3")
     implementation("androidx.navigation:navigation-ui:2.5.3")
+    
+    // 添加Osmdroid依赖
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }

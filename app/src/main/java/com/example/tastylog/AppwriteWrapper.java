@@ -217,10 +217,17 @@ public class AppwriteWrapper {
         double price,
         String tag,
         String content,
+        String location,
         Consumer<Document<Map<String, Object>>> onSuccess,
         Consumer<Exception> onError
     ) {
-        // 调用修改后的Kotlin方法，现在包含content参数
+        // 将位置信息添加到内容字段中
+        String contentWithLocation = content;
+        if (location != null && !location.isEmpty()) {
+            contentWithLocation = "位置: " + location + "\n\n" + content;
+        }
+        
+        // 调用原有的Kotlin方法，不传递location参数
         Appwrite.INSTANCE.addFoodItemWithCallback(
             userId,
             title,
@@ -229,7 +236,7 @@ public class AppwriteWrapper {
             (double) rating,
             price,
             tag,
-            content, // 传递content参数
+            contentWithLocation,
             document -> {
                 onSuccess.accept(document);
                 return null;

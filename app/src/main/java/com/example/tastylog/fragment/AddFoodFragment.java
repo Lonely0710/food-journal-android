@@ -43,9 +43,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 
 public class AddFoodFragment extends BaseFragment {
 
@@ -56,12 +59,15 @@ public class AddFoodFragment extends BaseFragment {
     private TextInputEditText etStoreName; // 原etTitle
     private TextInputEditText etPrice;
     private TextInputEditText etNotes;
+    private TextInputEditText etLocation; // 新增位置输入框变量
+    private TextInputEditText etDate;
     private RatingBar ratingBar;
     private ImageView ivFoodPhoto; // 将使用布局中的photo_container
     private ChipGroup chipGroup;
     private Uri photoUri;
     private FrameLayout photoContainer;
     private Chip chipAdd; // 用于添加标签
+    private Calendar selectedDate = Calendar.getInstance(); // 默认为当前日期
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,15 +77,16 @@ public class AddFoodFragment extends BaseFragment {
         etStoreName = view.findViewById(R.id.et_store_name);
         etPrice = view.findViewById(R.id.et_price);
         etNotes = view.findViewById(R.id.et_notes);
-        
-        // 确保EditText支持多语言输入
-        etStoreName.setInputType(InputType.TYPE_CLASS_TEXT);
-        etNotes.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        
+        etLocation = view.findViewById(R.id.et_location); // 初始化位置输入框
+        etDate = view.findViewById(R.id.et_date); // 初始化日期选择框
         ratingBar = view.findViewById(R.id.rating_bar);
         chipGroup = view.findViewById(R.id.chip_group);
         photoContainer = view.findViewById(R.id.layout_photo);
         chipAdd = view.findViewById(R.id.chip_add);
+        
+        // 确保EditText支持多语言输入
+        etStoreName.setInputType(InputType.TYPE_CLASS_TEXT);
+        etNotes.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         
         // 设置返回按钮
         ImageButton btnBack = view.findViewById(R.id.btn_back);
@@ -102,6 +109,13 @@ public class AddFoodFragment extends BaseFragment {
         chipAdd.setOnClickListener(v -> {
             showAddTagDialog();
         });
+        
+        // 设置日期选择框的初始值为当前日期
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        etDate.setText(dateFormat.format(selectedDate.getTime()));
+        
+        // 设置日期选择框点击事件
+        etDate.setOnClickListener(v -> showDatePickerDialog());
         
         return view;
     }
@@ -248,28 +262,43 @@ public class AddFoodFragment extends BaseFragment {
             return;
         }
         
-        // 创建FoodItem对象
-        FoodItem foodItem = new FoodItem();
-        foodItem.setTitle(etStoreName.getText().toString().trim());
-        foodItem.setPrice(etPrice.getText().toString().trim());
-        foodItem.setRating(ratingBar.getRating());
-        foodItem.setNotes(etNotes.getText().toString().trim());
-        
-        // 获取当前时间
-        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
-        foodItem.setTime(currentTime);
-        
-        // 获取标签
-        List<String> tags = new ArrayList<>();
-        for (int i = 0; i < chipGroup.getChildCount(); i++) {
-            View child = chipGroup.getChildAt(i);
-            if (child instanceof Chip && child.getId() != R.id.chip_add) {
-                tags.add(((Chip) child).getText().toString());
+        // 获取用户输入
+        final String storeName = etStoreName.getText().toString().trim();
+        final String priceText = etPrice.getText().toString().trim();
+        final String notesText = etNotes.getText().toString().trim();
+        final String locationText = etLocation.getText().toString().trim();
+        final float rating = ratingBar.getRating();
+
+        // 验证必填字段
+        if (TextUtils.isEmpty(storeName)) {
+            etStoreName.setError("请输入店名");
+            return;
+        }
+
+        // 处理价格
+        double price = 0.0;
+        if (!TextUtils.isEmpty(priceText)) {
+            try {
+                price = Double.parseDouble(priceText);
+            } catch (NumberFormatException e) {
+                etPrice.setError("请输入有效价格");
+                return;
             }
         }
-        foodItem.setTags(tags);
         
+        // 创建一个final变量用于lambda表达式
+        final double finalPrice = price;
+
+        // 获取选中的标签
+        List<String> tags = getSelectedTags();
+        final String tagsString = TextUtils.join(",", tags);
+
+        // 使用所选日期而不是当前时间
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        final String selectedDateStr = dateFormat.format(selectedDate.getTime());
+
         // 如果有照片，上传照片
+        String imageUrl = null;
         if (photoUri != null) {
             try {
                 // 使用BitmapUtil压缩图片
@@ -306,17 +335,14 @@ public class AddFoodFragment extends BaseFragment {
                     fileName,
                     fileBytes,
                     fileId -> {
-                        // 获取文件URL
-                        String fileUrl = AppwriteWrapper.getInstance().getFilePreviewUrl(
+                        // 获取文件URL并立即创建最终变量
+                        final String uploadedImageUrl = AppwriteWrapper.getInstance().getFilePreviewUrl(
                             "67c2de08001a22001a6c", // FOOD_IMAGES_BUCKET_ID
                             fileId
                         );
                         
-                        // 设置图片URL
-                        foodItem.setImageUrl(fileUrl);
-                        
-                        // 保存食物记录
-                        saveToDatabase(foodItem);
+                        // 保存食物记录，使用最终变量
+                        saveToDatabase(storeName, selectedDateStr, uploadedImageUrl, rating, finalPrice, tagsString, notesText, locationText);
                     },
                     error -> {
                         requireActivity().runOnUiThread(() -> {
@@ -328,40 +354,38 @@ public class AddFoodFragment extends BaseFragment {
                 Toast.makeText(requireContext(), "读取图片失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         } else {
-            // 没有照片，直接保存记录
-            saveToDatabase(foodItem);
+            // 没有照片，直接保存记录（使用空图片URL）
+            final String emptyImageUrl = "";
+            saveToDatabase(storeName, selectedDateStr, emptyImageUrl, rating, finalPrice, tagsString, notesText, locationText);
         }
     }
 
-    private void saveToDatabase(FoodItem foodItem) {
-        // 获取备注内容（etNotes可能已经存在，但内容应保存到content字段）
-        if (etNotes != null && etNotes.getText() != null) {
-            foodItem.setContent(etNotes.getText().toString());
-        }
+    private void saveToDatabase(String storeName, String time, String imageUrl, float rating, double price, String tags, String notes, String location) {
+        // 创建FoodItem对象
+        FoodItem foodItem = new FoodItem();
+        foodItem.setTitle(storeName);
+        foodItem.setPrice(String.valueOf(price));
+        foodItem.setRating(rating);
+        foodItem.setNotes(notes);
+        foodItem.setTime(time);
+        foodItem.setTags(List.of(tags.split(",")));
+        foodItem.setImageUrl(imageUrl);
+        foodItem.setLocation(location);
         
         // 获取当前用户ID
         String userId = AppwriteWrapper.getInstance().getCurrentUserId();
         
-        // 将标签列表转换为逗号分隔的字符串
-        StringBuilder tagBuilder = new StringBuilder();
-        List<String> tags = foodItem.getTags();
-        for (int i = 0; i < tags.size(); i++) {
-            tagBuilder.append(tags.get(i));
-            if (i < tags.size() - 1) {
-                tagBuilder.append(",");
-            }
-        }
-        
         // 调用AppwriteWrapper保存食物记录
         AppwriteWrapper.getInstance().addFoodItem(
             userId,
-            foodItem.getTitle(),
-            foodItem.getTime(),
-            foodItem.getImageUrl() != null ? foodItem.getImageUrl() : "",
-            foodItem.getRating(),
-            Double.parseDouble(foodItem.getPrice().isEmpty() ? "0" : foodItem.getPrice()),
-            tagBuilder.toString(),
-            foodItem.getContent(), // 传递content字段
+            storeName,
+            time,
+            imageUrl,
+            rating,
+            price,
+            tags,
+            notes,
+            location,
             document -> {
                 requireActivity().runOnUiThread(() -> {
                     Toast.makeText(requireContext(), "保存成功", Toast.LENGTH_SHORT).show();
@@ -447,5 +471,46 @@ public class AddFoodFragment extends BaseFragment {
             // 使用FragmentManager的popBackStack方法返回上一个Fragment
             requireActivity().getSupportFragmentManager().popBackStack();
         });
+    }
+
+    /**
+     * 显示日期选择对话框
+     */
+    private void showDatePickerDialog() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+            requireContext(),
+            (view, year, month, dayOfMonth) -> {
+                // 更新选择的日期
+                selectedDate.set(Calendar.YEAR, year);
+                selectedDate.set(Calendar.MONTH, month);
+                selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                
+                // 更新日期显示
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                etDate.setText(dateFormat.format(selectedDate.getTime()));
+            },
+            selectedDate.get(Calendar.YEAR),
+            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(Calendar.DAY_OF_MONTH)
+        );
+        
+        // 设置最大日期为当前日期（不允许选择未来日期）
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        
+        datePickerDialog.show();
+    }
+
+    /**
+     * 获取所有选中的标签
+     */
+    private List<String> getSelectedTags() {
+        List<String> tags = new ArrayList<>();
+        for (int i = 0; i < chipGroup.getChildCount(); i++) {
+            View child = chipGroup.getChildAt(i);
+            if (child instanceof Chip && child.getId() != R.id.chip_add) {
+                tags.add(((Chip) child).getText().toString());
+            }
+        }
+        return tags;
     }
 } 

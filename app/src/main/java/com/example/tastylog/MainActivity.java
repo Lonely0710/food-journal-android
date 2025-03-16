@@ -24,10 +24,11 @@ import com.example.tastylog.decoration.SpaceItemDecoration;
 import com.example.tastylog.model.FoodItem;
 import com.example.tastylog.fragment.AddFoodFragment;
 import com.example.tastylog.fragment.FoodDetailFragment;
-import com.example.tastylog.fragment.FavoriteFragment;
 import com.example.tastylog.fragment.HomeFragment;
 import com.example.tastylog.fragment.MineFragment;
 import com.example.tastylog.fragment.StatsFragment;
+import com.example.tastylog.fragment.MapFragment;
+
 
 import com.example.tastylog.AppwriteWrapper;
 
@@ -58,17 +59,17 @@ public class MainActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab_add);
 
         bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_home) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
                 switchFragment(new HomeFragment());
                 return true;
-            } else if (id == R.id.nav_stats) {
+            } else if (itemId == R.id.nav_stats) {
                 switchFragment(new StatsFragment());
                 return true;
-            } else if (id == R.id.nav_favorite) {
-                switchFragment(new FavoriteFragment());
+            } else if (itemId == R.id.nav_favorite) {
+                switchFragment(new MapFragment());
                 return true;
-            } else if (id == R.id.nav_mine) {
+            } else if (itemId == R.id.nav_mine) {
                 switchFragment(new MineFragment());
                 return true;
             }
