@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.HashMap;
+import java.util.Date;
 
 import io.appwrite.models.Session;
 import io.appwrite.models.User;
@@ -222,13 +223,6 @@ public class AppwriteWrapper {
         Consumer<Document<Map<String, Object>>> onSuccess,
         Consumer<Exception> onError
     ) {
-        // 将位置信息添加到内容字段中
-        String contentWithLocation = content;
-        if (location != null && !location.isEmpty()) {
-            contentWithLocation = "位置: " + location + "\n\n" + content;
-        }
-        
-        // 调用原有的Kotlin方法，不传递location参数
         Appwrite.INSTANCE.addFoodItemWithCallback(
             userId,
             title,
@@ -237,7 +231,8 @@ public class AppwriteWrapper {
             (double) rating,
             price,
             tag,
-            contentWithLocation,
+            content,  // 直接传递原始content
+            location, // 直接传递location
             document -> {
                 onSuccess.accept(document);
                 return null;
@@ -255,5 +250,90 @@ public class AppwriteWrapper {
             AppConfig.DATABASE_ID.equals("your_database_id_here")) {
             throw new IllegalStateException("请先配置AppConfig.java文件！");
         }
+    }
+
+    /**
+     * 删除食物记录
+     */
+    public void deleteFoodItem(
+        String userId,  // 保留参数但不传递给 Kotlin 方法
+        String foodId,
+        Runnable onSuccess,
+        Consumer<Exception> onError
+    ) {
+        Log.d(TAG, "正在调用删除方法, foodId=" + foodId);
+        
+        // 检查 foodId 是否为空
+        if (foodId == null || foodId.isEmpty()) {
+            Log.e(TAG, "删除失败: foodId 为空");
+            if (onError != null) {
+                onError.accept(new IllegalArgumentException("美食记录ID不能为空"));
+            }
+            return;
+        }
+        
+        try {
+            Appwrite.INSTANCE.deleteFoodItemWithCallback(
+                foodId,  // 只传递 foodId
+                () -> {
+                    Log.d(TAG, "删除成功, foodId=" + foodId);
+                    onSuccess.run();
+                    return null;
+                },
+                error -> {
+                    Log.e(TAG, "删除失败: " + error.getMessage(), error);
+                    onError.accept(error);
+                    return null;
+                }
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "调用删除方法异常: " + e.getMessage(), e);
+            if (onError != null) {
+                onError.accept(e);
+            }
+        }
+    }
+
+    /**
+     * 更新食物记录到Appwrite数据库
+     */
+    public void updateFoodItem(
+        String userId,
+        String documentId,
+        String title,
+        String time,
+        String imageUrl,
+        float rating,
+        double price,
+        String tags,
+        String notes,
+        String location,
+        Consumer<Document> onSuccess,
+        Consumer<Exception> onError) {
+        
+        Log.d(TAG, "正在调用更新方法, documentId=" + documentId);
+        
+        Appwrite.INSTANCE.updateFoodItemWithCallback(
+            userId,
+            documentId,
+            title,
+            time,
+            imageUrl,
+            (double) rating,
+            price,
+            tags,
+            notes,
+            location,
+            document -> {
+                Log.d(TAG, "更新成功, documentId=" + documentId);
+                onSuccess.accept(document);
+                return null;
+            },
+            error -> {
+                Log.e(TAG, "更新失败: " + error.getMessage(), error);
+                onError.accept(error);
+                return null;
+            }
+        );
     }
 }

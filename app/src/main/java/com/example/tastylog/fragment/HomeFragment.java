@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import android.util.Log;
 import com.example.tastylog.utils.FragmentUtils;
+import com.example.tastylog.utils.SafeCallback;
 
 public class HomeFragment extends BaseFragment {
 
@@ -110,32 +111,39 @@ public class HomeFragment extends BaseFragment {
         repository.getAllFoodItems(new FoodRepository.FoodListCallback() {
             @Override
             public void onFoodListLoaded(List<FoodItem> foodItems) {
-                requireActivity().runOnUiThread(() -> {
-                    // 更新统计栏
-                    updateStatistics(foodItems);
-                    
-                    // 更新RecyclerView
-                    adapter.setFoodList(foodItems);
-                    
-                    // 隐藏加载动画
-                    hideLoading();
-                    
-                    // 如果没有数据，显示空状态视图
-                    if (foodItems.isEmpty()) {
-                        showEmptyView();
-                    } else {
-                        hideEmptyView();
-                    }
+                // 使用安全回调工具类
+                SafeCallback.runIfFragmentAlive(HomeFragment.this, () -> {
+                    // 现在可以安全地使用requireActivity()
+                    requireActivity().runOnUiThread(() -> {
+                        // 更新统计栏
+                        updateStatistics(foodItems);
+                        
+                        // 更新RecyclerView
+                        adapter.setFoodList(foodItems);
+                        
+                        // 隐藏加载动画
+                        hideLoading();
+                        
+                        // 如果没有数据，显示空状态视图
+                        if (foodItems.isEmpty()) {
+                            showEmptyView();
+                        } else {
+                            hideEmptyView();
+                        }
+                    });
                 });
             }
 
             @Override
             public void onError(Exception e) {
-                FragmentUtils.safeUIAction(HomeFragment.this, () -> {
-                    loadingAnimation.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                    Toast.makeText(requireContext(), "加载数据失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }, "HomeFragment");
+                SafeCallback.runIfFragmentAlive(HomeFragment.this, () -> {
+                    requireActivity().runOnUiThread(() -> {
+                        Log.e("HomeFragment", "加载数据失败", e);
+                        hideLoading();
+                        // 显示错误信息
+                        Toast.makeText(requireContext(), "加载失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                });
             }
         });
     }

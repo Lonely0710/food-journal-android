@@ -35,10 +35,11 @@
                     app:tint="#FF9800" />
 
                 <TextView
+                    android:id="@+id/toolbar_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="新建食记"
+                    android:text="编辑美食"
                     android:textColor="#FF9800"
                     android:textSize="20sp"
                     android:layout_marginStart="16dp"/>
@@ -46,7 +47,7 @@
                 <Button
                     android:id="@+id/btn_save"
                     style="@style/AddFood.Button"
-                    android:text="完成"/>
+                    android:text="更新"/>
 
             </LinearLayout>
 
@@ -82,57 +83,18 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 用餐类型 -->
-            <TextView
-                style="@style/AddFood.Label"
-                android:text="用餐类型"/>
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_group_meal_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_breakfast"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="早餐"
-                    style="@style/AddFood.Chip"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_lunch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="午餐"
-                    style="@style/AddFood.Chip"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_dinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="晚餐"
-                    style="@style/AddFood.Chip"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_afternoon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="下午茶"
-                    style="@style/AddFood.Chip"/>
-
-            </com.google.android.material.chip.ChipGroup>
-
             <!-- 价格和日期 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <!-- 价格 -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/AddFood.TextInput"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     android:hint="价格"
@@ -147,12 +109,12 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- 日期选择 -->
+                <!-- 日期 -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/AddFood.TextInput"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
                     android:hint="日期"
                     app:startIconDrawable="@drawable/ic_calendar">
 
@@ -160,9 +122,9 @@
                         android:id="@+id/et_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="none"
                         android:focusable="false"
-                        android:clickable="true"/>
+                        android:clickable="true"
+                        android:inputType="none"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -196,7 +158,7 @@
             <!-- 照片区域 -->
             <TextView
                 style="@style/AddFood.Label"
-                android:text="添加照片"/>
+                android:text="美食照片"/>
 
             <FrameLayout
                 android:id="@+id/layout_photo"
@@ -222,7 +184,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="上传美食照片"
+                        android:text="点击更换照片"
                         android:textColor="#999999"
                         android:textSize="14sp"/>
                 </LinearLayout>

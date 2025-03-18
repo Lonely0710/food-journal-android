@@ -19,6 +19,7 @@ public class FoodItem implements Parcelable, Serializable {
     private String notes;
     private String location;
     private String content = "";
+    private String documentId;
 
     // 默认构造函数
     public FoodItem() {
@@ -75,6 +76,14 @@ public class FoodItem implements Parcelable, Serializable {
         this.content = content;
     }
 
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
     // Parcelable实现
     protected FoodItem(Parcel in) {
         id = in.readString();
@@ -87,6 +96,8 @@ public class FoodItem implements Parcelable, Serializable {
         imageUrl = in.readString();
         notes = in.readString();
         location = in.readString();
+        content = in.readString();
+        documentId = in.readString();
     }
 
     @Override
@@ -100,6 +111,8 @@ public class FoodItem implements Parcelable, Serializable {
         dest.writeString(imageUrl);
         dest.writeString(notes);
         dest.writeString(location);
+        dest.writeString(content);
+        dest.writeString(documentId);
     }
 
     @Override

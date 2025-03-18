@@ -40,10 +40,12 @@ public class MainActivity extends AppCompatActivity {
     
     private FloatingActionButton fab;
     private BottomNavigationView bottomNav;
+    private static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.activity_main);
 
         // 使用 Java 包装类初始化 Appwrite
@@ -200,6 +202,18 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // 如果当前不是HomeFragment，切换到HomeFragment
             switchFragment(new HomeFragment());
+        }
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (instance == this) {
+            instance = null;
         }
     }
 } 

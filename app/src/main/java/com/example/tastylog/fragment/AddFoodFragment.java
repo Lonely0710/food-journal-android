@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.tastylog.AppwriteWrapper;
 import com.example.tastylog.MainActivity;
@@ -36,6 +37,7 @@ import com.example.tastylog.utils.BitmapUtil;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -140,32 +142,65 @@ public class AddFoodFragment extends BaseFragment {
     }
 
     private void showAddTagDialog() {
-        // 实现添加标签的对话框
-        // 这里可以使用AlertDialog或自定义对话框
-        // 示例代码：
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("添加标签");
         
-        final EditText input = new EditText(requireContext());
-        builder.setView(input);
+        // 使用自定义布局
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_tag, null);
+        builder.setView(dialogView);
+        
+        // 获取布局中的控件
+        TextInputEditText inputTag = dialogView.findViewById(R.id.et_tag);
+        ChipGroup quickTagsGroup = dialogView.findViewById(R.id.quick_tags_group);
+        
+        // 设置快速标签的点击事件
+        for (int i = 0; i < quickTagsGroup.getChildCount(); i++) {
+            View child = quickTagsGroup.getChildAt(i);
+            if (child instanceof Chip) {
+                Chip chip = (Chip) child;
+                chip.setOnClickListener(v -> {
+                    // 当点击快速标签时，只是将文本填入输入框，而不是直接添加标签
+                    String tagText = chip.getText().toString();
+                    inputTag.setText(tagText.replace("#", "")); // 移除#号，因为在addTag时会自动添加
+                    inputTag.setSelection(inputTag.length()); // 将光标移到文本末尾
+                });
+            }
+        }
         
         builder.setPositiveButton("确定", (dialog, which) -> {
-            String tagText = input.getText().toString().trim();
+            String tagText = inputTag.getText().toString().trim();
             if (!TextUtils.isEmpty(tagText)) {
+                // 只在用户点击确定时添加标签
                 addTag(tagText);
             }
         });
+        
         builder.setNegativeButton("取消", (dialog, which) -> dialog.cancel());
         
-        builder.show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void addTag(String tagText) {
+        // 确保标签以#开头
+        String finalTagText = tagText.startsWith("#") ? tagText : "#" + tagText;
+        
+        // 检查标签是否已存在
+        for (int i = 0; i < chipGroup.getChildCount(); i++) {
+            View child = chipGroup.getChildAt(i);
+            if (child instanceof Chip && ((Chip) child).getText().toString().equals(finalTagText)) {
+                Toast.makeText(requireContext(), "该标签已存在", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        
+        // 创建新的Chip
         Chip chip = new Chip(requireContext());
-        chip.setText("#" + tagText);
+        chip.setText(finalTagText);
         chip.setCloseIconVisible(true);
         chip.setOnCloseIconClickListener(v -> chipGroup.removeView(chip));
         
+        // 将新标签添加到chipAdd之前
         if (chipAdd != null) {
             chipGroup.addView(chip, chipGroup.indexOfChild(chipAdd));
         } else {
@@ -507,6 +542,7 @@ public class AddFoodFragment extends BaseFragment {
         List<String> tags = new ArrayList<>();
         for (int i = 0; i < chipGroup.getChildCount(); i++) {
             View child = chipGroup.getChildAt(i);
+            // 只收集非"添加标签"按钮的Chip
             if (child instanceof Chip && child.getId() != R.id.chip_add) {
                 tags.add(((Chip) child).getText().toString());
             }

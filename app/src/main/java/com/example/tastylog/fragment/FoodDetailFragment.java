@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RatingBar;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,8 @@ import com.example.tastylog.model.FoodItem;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.example.tastylog.FoodDetailActivity;
+import com.example.tastylog.AppwriteWrapper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -120,15 +123,9 @@ public class FoodDetailFragment extends Fragment {
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setNavigationOnClickListener(v -> {
-                // 使用FragmentManager的popBackStack方法返回上一个Fragment
-                requireActivity().getSupportFragmentManager().popBackStack();
-                
-                // 延迟更新FAB可见性，确保事务完成
-                new Handler().postDelayed(() -> {
-                    if (getActivity() instanceof MainActivity) {
-                        ((MainActivity) getActivity()).updateFabVisibility();
-                    }
-                }, 100);
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
             });
         }
 
@@ -152,15 +149,29 @@ public class FoodDetailFragment extends Fragment {
         View btnEdit = view.findViewById(R.id.btn_edit);
         if (btnEdit != null) {
             btnEdit.setOnClickListener(v -> {
-                // TODO: 跳转到编辑页面
+                // 启动编辑页面
+                if (foodItem != null && getActivity() instanceof MainActivity) {
+                    EditFoodFragment editFoodFragment = EditFoodFragment.newInstance(foodItem);
+                    
+                    // 使用Fragment事务替换当前Fragment
+                    getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, editFoodFragment)
+                        .addToBackStack(null)
+                        .commit();
+                }
             });
         }
 
-        View btnDelete = view.findViewById(R.id.btn_delete);
+        // 确保删除按钮设置了点击监听器
+        com.google.android.material.button.MaterialButton btnDelete = view.findViewById(R.id.btn_delete);
         if (btnDelete != null) {
             btnDelete.setOnClickListener(v -> {
+                Log.d("FoodDetailFragment", "删除按钮被点击");
                 showDeleteConfirmDialog();
             });
+        } else {
+            Log.e("FoodDetailFragment", "错误: 找不到删除按钮");
         }
 
         View btnShare = view.findViewById(R.id.btn_share);
@@ -173,13 +184,66 @@ public class FoodDetailFragment extends Fragment {
     }
 
     private void showDeleteConfirmDialog() {
+        // 添加调试日志
+        Log.d("FoodDetailFragment", "显示删除确认对话框: " + 
+              "ID=" + foodItem.getId() + 
+              ", 文档ID=" + foodItem.getDocumentId() + 
+              ", 标题=" + foodItem.getTitle());
+        
         new AlertDialog.Builder(requireContext())
             .setTitle("删除确认")
             .setMessage("确定要删除这条美食记录吗？")
             .setPositiveButton("确定", (dialog, which) -> {
-                // TODO: 实现删除逻辑
-                Toast.makeText(requireContext(), "删除成功", Toast.LENGTH_SHORT).show();
-                requireActivity().onBackPressed();
+                // 添加日志
+                Log.d("FoodDetailFragment", "用户确认删除");
+                
+                // 处理不同类型的Activity
+                if (getActivity() instanceof FoodDetailActivity) {
+                    ((FoodDetailActivity) getActivity()).deleteFoodItem(foodItem);
+                } else if (getActivity() instanceof MainActivity) {
+                    // 添加处理MainActivity的逻辑
+                    Log.d("FoodDetailFragment", "MainActivity中调用删除");
+                    AppwriteWrapper appwrite = AppwriteWrapper.getInstance();
+                    String userId = appwrite.getCurrentUserId();
+                    String documentId = foodItem.getDocumentId();
+                    
+                    // 检查documentId
+                    if (documentId == null || documentId.isEmpty()) {
+                        Log.e("FoodDetailFragment", "文档ID为空，无法删除");
+                        Toast.makeText(requireContext(), "无法删除：文档ID为空", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    // 直接调用AppwriteWrapper删除
+                    appwrite.deleteFoodItem(
+                        userId,
+                        documentId,
+                        () -> {
+                            Log.d("FoodDetailFragment", "删除成功");
+                            requireActivity().runOnUiThread(() -> {
+                                Toast.makeText(requireContext(), "删除成功", Toast.LENGTH_SHORT).show();
+                                
+                                // 刷新首页
+                                MainActivity activity = (MainActivity) getActivity();
+                                if (activity != null) {
+                                    activity.refreshHomeFragment();
+                                    // 回到上一页
+                                    activity.onBackPressed();
+                                }
+                            });
+                        },
+                        error -> {
+                            Log.e("FoodDetailFragment", "删除失败: " + error.getMessage());
+                            requireActivity().runOnUiThread(() -> {
+                                Toast.makeText(requireContext(), "删除失败: " + error.getMessage(), 
+                                    Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    );
+                } else {
+                    Log.e("FoodDetailFragment", "错误: 未知Activity类型: " + 
+                        (getActivity() != null ? getActivity().getClass().getSimpleName() : "null"));
+                }
             })
             .setNegativeButton("取消", null)
             .show();

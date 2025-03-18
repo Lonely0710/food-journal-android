@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+    
+    <!-- 标签图标和说明 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+        
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_label"
+            app:tint="#FF9800"
+            android:padding="4dp"
+            android:background="@drawable/bg_circle_orange_light"/>
+            
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="添加您喜欢的标签，方便后续查找"
+            android:textSize="14sp"
+            android:textColor="#757575"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
+    
+    <!-- 输入框 -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/AddFood.TextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="输入标签名称"
+        app:startIconDrawable="@drawable/ic_label"
+        app:prefixText="#">
+        
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_tag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"/>
+            
+    </com.google.android.material.textfield.TextInputLayout>
+    
+    <!-- 快速标签选择 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="快速选择"
+        android:textSize="16sp"
+        android:textColor="#333333"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+        
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/quick_tags_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <com.google.android.material.chip.Chip
+            style="@style/AddFood.Chip"
+            android:text="#麻辣"/>
+            
+        <com.google.android.material.chip.Chip
+            style="@style/AddFood.Chip"
+            android:text="#清淡"/>
+            
+        <com.google.android.material.chip.Chip
+            style="@style/AddFood.Chip"
+            android:text="#家常菜"/>
+            
+        <com.google.android.material.chip.Chip
+            style="@style/AddFood.Chip"
+            android:text="#朋友聚餐"/>
+            
+        <com.google.android.material.chip.Chip
+            style="@style/AddFood.Chip"
+            android:text="#约会"/>
+            
+        <com.google.android.material.chip.Chip
+            style="@style/AddFood.Chip"
+            android:text="#甜品"/>
+            
+    </com.google.android.material.chip.ChipGroup>
+    
+</LinearLayout> 

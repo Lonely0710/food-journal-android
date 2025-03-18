@@ -15,6 +15,7 @@ import kotlin.concurrent.timer
 import java.net.URLEncoder
 import com.example.tastylog.model.FoodItem
 import com.example.tastylog.config.AppConfig
+import java.util.Date
 
 object Appwrite {
     lateinit var client: Client
@@ -342,10 +343,13 @@ object Appwrite {
     }
     
     // 将 Document 转换为 FoodItem - 辅助方法
-    private fun documentToFoodItem(document: Document<Map<String, Any>>): FoodItem {
-        val foodItem = FoodItem() // 使用默认构造函数
+    fun documentToFoodItem(document: Document<Map<String, Any>>): FoodItem {
+        val foodItem = FoodItem()
         
-        // 使用setter方法设置属性
+        // 设置文档ID (这是关键)
+        foodItem.setDocumentId(document.id)
+        
+        // 设置其他属性
         foodItem.setId(document.data["food_id"] as? String ?: "")
         foodItem.setTitle(document.data["title"] as? String ?: "")
         foodItem.setTime(document.data["time"] as? String ?: "")
@@ -399,10 +403,10 @@ object Appwrite {
             try {
                 // 获取当前会话用户
                 val currentUser = account.get()
-                Log.d("Appwrite", "获取到当前用户: ${currentUser?.name}, ID: ${currentUser?.id}")
+                Log.d("Appwrite", "获取到当前用户: ${currentUser.name}, ID: ${currentUser.id}")
                 
                 // 确保用户存在
-                if (currentUser?.id != null) {
+                if (currentUser.id != null) {
                     // 查询用户文档以获取更多信息
                     val response = databases.listDocuments(
                         AppConfig.DATABASE_ID,
@@ -568,7 +572,7 @@ object Appwrite {
         return "${client.endpoint}/storage/buckets/$bucketId/files/$fileId/preview?project=${AppConfig.PROJECT_ID}"
     }
 
-    // 添加获取用户食物列表的回调方法，供Java代码调用
+    // 获取用户美食列表时确保返回包含正确的文档ID
     fun getUserFoodItemsWithCallback(
         userId: String,
         onSuccess: (List<Document<Map<String, Any>>>) -> Unit,
@@ -576,18 +580,24 @@ object Appwrite {
     ) {
         appwriteScope.launch {
             try {
-                val response = databases.listDocuments(
+                val documents = databases.listDocuments(
                     AppConfig.DATABASE_ID,
                     AppConfig.FOOD_LIST_COLLECTION_ID,
                     listOf(
                         io.appwrite.Query.equal("user_id", userId)
                     )
                 )
+                
+                // 添加日志
+                documents.documents.forEach { doc ->
+                    Log.d("Appwrite", "获取到文档: ID=${doc.id}, 标题=${doc.data["title"]}")
+                }
+                
                 withContext(Dispatchers.Main) {
-                    onSuccess(response.documents)
+                    onSuccess(documents.documents)
                 }
             } catch (e: Exception) {
-                Log.e("Appwrite", "获取用户食物列表失败: ${e.message}", e)
+                Log.e("Appwrite", "获取美食列表失败: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     onError(e)
                 }
@@ -595,7 +605,7 @@ object Appwrite {
         }
     }
 
-    // 添加创建食物记录的回调方法，供Java代码调用
+    // 修改创建食物记录的回调方法，添加location参数
     fun addFoodItemWithCallback(
         userId: String,
         title: String,
@@ -605,6 +615,7 @@ object Appwrite {
         price: Double,
         tag: String,
         content: String,
+        location: String,  // 新增location参数
         onSuccess: (Document<Map<String, Any>>) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -619,7 +630,8 @@ object Appwrite {
                     "price" to price,
                     "img_url" to imgUrl,
                     "tag" to tag,
-                    "content" to content
+                    "content" to content,
+                    "location" to location 
                 )
                 
                 val document = databases.createDocument(
@@ -634,6 +646,85 @@ object Appwrite {
                 }
             } catch (e: Exception) {
                 Log.e("Appwrite", "创建食物记录失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 修改删除食物记录的方法
+    fun deleteFoodItemWithCallback(
+        foodId: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        appwriteScope.launch {
+            try {
+                Log.d("Appwrite", "开始删除文档, ID=$foodId, 数据库=${AppConfig.DATABASE_ID}, 集合=${AppConfig.FOOD_LIST_COLLECTION_ID}")
+                
+                // 删除文档
+                databases.deleteDocument(
+                    AppConfig.DATABASE_ID,
+                    AppConfig.FOOD_LIST_COLLECTION_ID,
+                    foodId
+                )
+                
+                Log.d("Appwrite", "删除文档成功, ID=$foodId")
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "删除食物记录失败: ID=$foodId, 错误=${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 更新食物记录
+    fun updateFoodItemWithCallback(
+        userId: String,
+        documentId: String,
+        title: String,
+        time: String,
+        imgUrl: String,
+        rating: Double,
+        price: Double,
+        tag: String,
+        content: String,
+        location: String,
+        onSuccess: (Document<Map<String, Any>>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        appwriteScope.launch {
+            try {
+                val data = mapOf(
+                    "user_id" to userId,
+                    "title" to title,
+                    "time" to time,
+                    "img_url" to imgUrl,
+                    "rating" to rating,
+                    "price" to price,
+                    "tag" to tag,
+                    "content" to content,
+                    "location" to location
+                )
+                
+                val document = databases.updateDocument(
+                    AppConfig.DATABASE_ID,
+                    AppConfig.FOOD_LIST_COLLECTION_ID,
+                    documentId,
+                    data
+                )
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess(document)
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "更新食物记录失败: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     onError(e)
                 }

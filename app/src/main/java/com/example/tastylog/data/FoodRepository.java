@@ -146,28 +146,33 @@ public class FoodRepository {
         AppwriteWrapper.getInstance().getUserFoodItems(
             userId,
             documents -> {
-                List<FoodItem> foodItems = new ArrayList<>();
-                for (Document<Map<String, Object>> document : documents) {
-                    // 添加调试日志
-                    Map<String, Object> data = document.getData();
-                    Log.d(TAG, "Document ID: " + document.getId());
-                    Log.d(TAG, "Document Data: " + data.toString());
-                    if (data.containsKey("rating")) {
-                        Log.d(TAG, "Rating: " + data.get("rating") + " (Class: " + data.get("rating").getClass().getName() + ")");
+                try {
+                    List<FoodItem> foodItems = new ArrayList<>();
+                    for (Document<Map<String, Object>> document : documents) {
+                        // 添加调试日志
+                        Map<String, Object> data = document.getData();
+                        Log.d(TAG, "Document ID: " + document.getId());
+                        Log.d(TAG, "Document Data: " + data.toString());
+                        if (data.containsKey("rating")) {
+                            Log.d(TAG, "Rating: " + data.get("rating") + " (Class: " + data.get("rating").getClass().getName() + ")");
+                        }
+                        if (data.containsKey("price")) {
+                            Log.d(TAG, "Price: " + data.get("price") + " (Class: " + data.get("price").getClass().getName() + ")");
+                        }
+                        
+                        FoodItem item = documentToFoodItem(document);
+                        foodItems.add(item);
+                        
+                        // 添加转换后的日志
+                        Log.d(TAG, "Converted FoodItem: " + item.getTitle() + ", Rating: " + item.getRating() + ", Price: " + item.getPrice());
                     }
-                    if (data.containsKey("price")) {
-                        Log.d(TAG, "Price: " + data.get("price") + " (Class: " + data.get("price").getClass().getName() + ")");
-                    }
-                    
-                    FoodItem item = documentToFoodItem(document);
-                    foodItems.add(item);
-                    
-                    // 添加转换后的日志
-                    Log.d(TAG, "Converted FoodItem: " + item.getTitle() + ", Rating: " + item.getRating() + ", Price: " + item.getPrice());
+                    cachedFoodItems.clear();
+                    cachedFoodItems.addAll(foodItems);
+                    callback.onFoodListLoaded(foodItems);
+                } catch (Exception e) {
+                    Log.e(TAG, "处理Appwrite响应时发生错误", e);
+                    callback.onError(e);
                 }
-                cachedFoodItems.clear();
-                cachedFoodItems.addAll(foodItems);
-                callback.onFoodListLoaded(foodItems);
             },
             error -> {
                 Log.e(TAG, "Error fetching food items from Appwrite", error);
@@ -179,11 +184,17 @@ public class FoodRepository {
     // 将Appwrite Document转换为FoodItem
     private FoodItem documentToFoodItem(Document<Map<String, Object>> document) {
         FoodItem item = new FoodItem();
-        
-        // 设置ID - 使用document.$id作为唯一标识符
-        item.setId(document.getId());
-        
         Map<String, Object> data = document.getData();
+        
+        // 设置文档ID - 这是关键，需要添加这一行
+        item.setDocumentId(document.getId());
+        
+        // 设置food_id - 存在时使用，不存在时才用document.getId()
+        if (data.containsKey("food_id")) {
+            item.setId((String) data.get("food_id"));
+        } else {
+            item.setId(document.getId());
+        }
         
         // 设置标题
         if (data.containsKey("title")) {
