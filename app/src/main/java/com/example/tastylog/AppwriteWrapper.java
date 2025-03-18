@@ -11,6 +11,7 @@ import java.util.HashMap;
 import io.appwrite.models.Session;
 import io.appwrite.models.User;
 import io.appwrite.models.Document;
+import com.example.tastylog.config.AppConfig;
 
 /**
  * Java 包装类，访问 Kotlin 的 Appwrite 对象
@@ -246,5 +247,13 @@ public class AppwriteWrapper {
                 return null;
             }
         );
+    }
+
+    // 添加配置验证
+    private void validateConfig() {
+        if (AppConfig.PROJECT_ID.equals("your_project_id_here") ||
+            AppConfig.DATABASE_ID.equals("your_database_id_here")) {
+            throw new IllegalStateException("请先配置AppConfig.java文件！");
+        }
     }
 }

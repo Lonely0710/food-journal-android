@@ -14,18 +14,13 @@ import java.util.UUID
 import kotlin.concurrent.timer
 import java.net.URLEncoder
 import com.example.tastylog.model.FoodItem
+import com.example.tastylog.config.AppConfig
 
 object Appwrite {
     lateinit var client: Client
     lateinit var account: Account
     lateinit var databases: Databases
     lateinit var storage: Storage
-
-    private const val PROJECT_ID = "67c2dd4e00140c0a40cf" // 项目ID
-    private const val DATABASE_ID = "67c2dd79003144b9649c" // 数据库ID
-    private const val USERS_COLLECTION_ID = "67c2ddda003a261ef14e" // 用户集合ID
-    private const val FOOD_LIST_COLLECTION_ID = "67c2dde7002554724586" // 食物列表集合ID
-    private const val FOOD_IMAGES_BUCKET_ID = "67c2de08001a22001a6c" // 存储ID
 
     // 添加自定义协程作用域，替代GlobalScope
     private val appwriteScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -38,7 +33,7 @@ object Appwrite {
     fun init(context: Context) {
         client = Client(context)
             .setEndpoint("https://cloud.appwrite.io/v1")
-            .setProject(PROJECT_ID)
+            .setProject(AppConfig.PROJECT_ID)
 
         account = Account(client)
         databases = Databases(client)
@@ -179,8 +174,8 @@ object Appwrite {
                 Log.d("Appwrite", "创建用户文档 - 传入数据详情: user_id=$userId, email=$email, name=$name, avatar_url=$avatarUrl")
                 
                 val document = databases.createDocument(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
+                    AppConfig.DATABASE_ID,
+                    AppConfig.USERS_COLLECTION_ID,
                     ID.unique(),  // 使用唯一ID作为文档ID，而不是userId
                     userData,
                 )
@@ -189,8 +184,8 @@ object Appwrite {
                 
                 // 尝试列出最近创建的所有文档
                 val docs = databases.listDocuments(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
+                    AppConfig.DATABASE_ID,
+                    AppConfig.USERS_COLLECTION_ID,
                     listOf() // 不添加任何过滤条件，获取所有文档
                 )
                 Log.d("Appwrite", "查询到${docs.documents.size}个文档")
@@ -224,8 +219,8 @@ object Appwrite {
             Log.d("Appwrite", "开始创建初始食物列表，数据: $data")
             
             val document = databases.createDocument(
-                DATABASE_ID,  
-                FOOD_LIST_COLLECTION_ID,  
+                AppConfig.DATABASE_ID,  
+                AppConfig.FOOD_LIST_COLLECTION_ID,  
                 ID.unique(),      
                 data               
             )
@@ -316,8 +311,8 @@ object Appwrite {
             Log.d("Appwrite", "开始创建食物项，数据: $data")
             
             val document = databases.createDocument(
-                DATABASE_ID,  
-                FOOD_LIST_COLLECTION_ID,  
+                AppConfig.DATABASE_ID,  
+                AppConfig.FOOD_LIST_COLLECTION_ID,  
                 ID.unique(),      
                 data               
             )
@@ -332,8 +327,8 @@ object Appwrite {
         return withContext(Dispatchers.IO) {
             try {
                 val response = databases.listDocuments(
-                    DATABASE_ID,
-                    FOOD_LIST_COLLECTION_ID,
+                    AppConfig.DATABASE_ID,
+                    AppConfig.FOOD_LIST_COLLECTION_ID,
                     listOf(
                         io.appwrite.Query.equal("user_id", userId)
                     )
@@ -385,8 +380,8 @@ object Appwrite {
         return withContext(Dispatchers.IO) {
             try {
                 databases.updateDocument(
-                    DATABASE_ID,
-                    USERS_COLLECTION_ID,
+                    AppConfig.DATABASE_ID,
+                    AppConfig.USERS_COLLECTION_ID,
                     userId,
                     mapOf("avatar_url" to avatarUrl)
                 )
@@ -410,8 +405,8 @@ object Appwrite {
                 if (currentUser?.id != null) {
                     // 查询用户文档以获取更多信息
                     val response = databases.listDocuments(
-                        DATABASE_ID,
-                        USERS_COLLECTION_ID,
+                        AppConfig.DATABASE_ID,
+                        AppConfig.USERS_COLLECTION_ID,
                         listOf(
                             io.appwrite.Query.equal("user_id", currentUser.id)
                         )
@@ -502,8 +497,8 @@ object Appwrite {
         }
     }
 
-    fun getDatabaseId() = DATABASE_ID
-    fun getUsersCollectionId() = USERS_COLLECTION_ID
+    fun getDatabaseId() = AppConfig.DATABASE_ID
+    fun getUsersCollectionId() = AppConfig.USERS_COLLECTION_ID
 
     // 添加获取当前用户ID的方法，供Java代码调用
     fun getCurrentUserId(): String {
@@ -570,7 +565,7 @@ object Appwrite {
 
     // 获取文件预览URL
     fun getFilePreviewUrl(bucketId: String, fileId: String): String {
-        return "${client.endpoint}/storage/buckets/$bucketId/files/$fileId/preview?project=$PROJECT_ID"
+        return "${client.endpoint}/storage/buckets/$bucketId/files/$fileId/preview?project=${AppConfig.PROJECT_ID}"
     }
 
     // 添加获取用户食物列表的回调方法，供Java代码调用
@@ -582,8 +577,8 @@ object Appwrite {
         appwriteScope.launch {
             try {
                 val response = databases.listDocuments(
-                    DATABASE_ID,
-                    FOOD_LIST_COLLECTION_ID,
+                    AppConfig.DATABASE_ID,
+                    AppConfig.FOOD_LIST_COLLECTION_ID,
                     listOf(
                         io.appwrite.Query.equal("user_id", userId)
                     )
@@ -628,8 +623,8 @@ object Appwrite {
                 )
                 
                 val document = databases.createDocument(
-                    DATABASE_ID,
-                    FOOD_LIST_COLLECTION_ID,
+                    AppConfig.DATABASE_ID,
+                    AppConfig.FOOD_LIST_COLLECTION_ID,
                     ID.unique(),
                     data
                 )

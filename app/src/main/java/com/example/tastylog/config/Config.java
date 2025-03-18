@@ -5,8 +5,8 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 
 public class Config {
-    // 天地图API密钥
-    public static final String MAP_KEY = "07c7110102c106941a10b4696cf0f415";
+    // 将直接使用的API密钥替换为从AppConfig获取
+    public static final String MAP_KEY = AppConfig.MAP_KEY;
     
     // 默认GeoPoint (中国中心位置)
     public static final GeoPoint defaultGeoPoint = new GeoPoint(35.86166, 104.195397);
