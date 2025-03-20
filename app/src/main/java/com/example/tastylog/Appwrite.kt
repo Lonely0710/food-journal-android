@@ -16,6 +16,7 @@ import java.net.URLEncoder
 import com.example.tastylog.model.FoodItem
 import com.example.tastylog.config.AppConfig
 import java.util.Date
+import io.appwrite.Query
 
 object Appwrite {
     lateinit var client: Client
@@ -567,9 +568,10 @@ object Appwrite {
         }
     }
 
-    // 获取文件预览URL
+    // 修改获取文件预览URL的方法
     fun getFilePreviewUrl(bucketId: String, fileId: String): String {
-        return "${client.endpoint}/storage/buckets/$bucketId/files/$fileId/preview?project=${AppConfig.PROJECT_ID}"
+        // 直接构建URL
+        return "${client.endpoint}/storage/buckets/$bucketId/files/$fileId/view?project=${AppConfig.PROJECT_ID}"
     }
 
     // 获取用户美食列表时确保返回包含正确的文档ID
@@ -725,6 +727,180 @@ object Appwrite {
                 }
             } catch (e: Exception) {
                 Log.e("Appwrite", "更新食物记录失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 修改更新用户名方法，先查询用户文档
+    fun updateUserName(newName: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        appwriteScope.launch {
+            try {
+                // 获取当前用户ID
+                val userId = account.get().id
+                Log.d("Appwrite", "准备更新用户名，用户ID: $userId")
+                
+                // 先查询用户文档
+                val response = databases.listDocuments(
+                    AppConfig.DATABASE_ID,
+                    AppConfig.USERS_COLLECTION_ID,
+                    listOf(
+                        Query.equal("user_id", userId)
+                    )
+                )
+                
+                if (response.documents.isEmpty()) {
+                    Log.d("Appwrite", "未找到用户文档，创建新文档")
+                    // 创建新文档
+                    databases.createDocument(
+                        AppConfig.DATABASE_ID,
+                        AppConfig.USERS_COLLECTION_ID,
+                        ID.unique(),
+                        mapOf(
+                            "user_id" to userId,
+                            "name" to newName,
+                            "avatar_url" to ""
+                        )
+                    )
+                } else {
+                    // 获取文档ID并更新
+                    val documentId = response.documents[0].id
+                    Log.d("Appwrite", "找到用户文档ID: $documentId")
+                    
+                    databases.updateDocument(
+                        AppConfig.DATABASE_ID,
+                        AppConfig.USERS_COLLECTION_ID,
+                        documentId,
+                        mapOf("name" to newName)
+                    )
+                }
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "更新用户名失败: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 修改更新头像方法，先查询用户文档
+    fun updateUserAvatar(avatarUrl: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
+        appwriteScope.launch {
+            try {
+                val userId = account.get().id
+                Log.d("Appwrite", "准备更新用户头像，用户ID: $userId")
+                
+                // 先查询用户文档
+                val response = databases.listDocuments(
+                    AppConfig.DATABASE_ID,
+                    AppConfig.USERS_COLLECTION_ID,
+                    listOf(
+                        Query.equal("user_id", userId)
+                    )
+                )
+                
+                Log.d("Appwrite", "查询用户文档结果: 找到 ${response.documents.size} 个文档")
+                response.documents.forEach { doc ->
+                    Log.d("Appwrite", "文档信息: id=${doc.id}, data=${doc.data}")
+                }
+                
+                if (response.documents.isEmpty()) {
+                    Log.d("Appwrite", "未找到用户文档，创建新文档")
+                    val newDoc = databases.createDocument(
+                        AppConfig.DATABASE_ID,
+                        AppConfig.USERS_COLLECTION_ID,
+                        ID.unique(),
+                        mapOf(
+                            "user_id" to userId,
+                            "name" to account.get().name,
+                            "avatar_url" to avatarUrl
+                        )
+                    )
+                    Log.d("Appwrite", "创建新文档成功: id=${newDoc.id}")
+                } else {
+                    val documentId = response.documents[0].id
+                    Log.d("Appwrite", "找到用户文档ID: $documentId")
+                    
+                    val updatedDoc = databases.updateDocument(
+                        AppConfig.DATABASE_ID,
+                        AppConfig.USERS_COLLECTION_ID,
+                        documentId,
+                        mapOf("avatar_url" to avatarUrl)
+                    )
+                    Log.d("Appwrite", "更新文档成功: id=${updatedDoc.id}")
+                }
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "更新用户头像失败: ${e.message}", e)
+                Log.e("Appwrite", "详细错误: ", e)
+                withContext(Dispatchers.Main) {
+                    onError(e)
+                }
+            }
+        }
+    }
+
+    // 修改上传头像方法
+    fun uploadAvatar(fileName: String, fileBytes: ByteArray, 
+                    onSuccess: (String) -> Unit, onError: (Exception) -> Unit) {
+        appwriteScope.launch {
+            try {
+                Log.d("Appwrite", "开始上传头像: fileName=$fileName, fileSize=${fileBytes.size}")
+                
+                // 确保文件名有正确的扩展名
+                val finalFileName = if (!fileName.lowercase().endsWith(".jpg") 
+                    && !fileName.lowercase().endsWith(".jpeg")) {
+                    "$fileName.jpg"
+                } else {
+                    fileName
+                }
+                
+                // 检查文件大小
+                if (fileBytes.size > 5 * 1024 * 1024) { // 5MB限制
+                    throw Exception("文件太大，请选择较小的图片")
+                }
+                
+                // 创建带有MIME类型的InputFile
+                val inputFile = InputFile.fromBytes(
+                    bytes = fileBytes,
+                    filename = finalFileName,
+                    mimeType = "image/jpeg"  // 显式指定MIME类型
+                )
+                
+                Log.d("Appwrite", "准备上传文件: filename=$finalFileName")
+                
+                // 上传文件
+                val result = storage.createFile(
+                    bucketId = AppConfig.FOOD_IMAGES_BUCKET_ID,
+                    fileId = ID.unique(),
+                    file = inputFile
+                )
+                
+                Log.d("Appwrite", "文件上传成功: fileId=${result.id}")
+                
+                // 生成文件URL
+                val fileUrl = getFilePreviewUrl(
+                    AppConfig.FOOD_IMAGES_BUCKET_ID,
+                    result.id
+                )
+                
+                Log.d("Appwrite", "生成文件访问URL: $fileUrl")
+                
+                withContext(Dispatchers.Main) {
+                    onSuccess(fileUrl)
+                }
+            } catch (e: Exception) {
+                Log.e("Appwrite", "上传头像失败: ${e.message}", e)
+                Log.e("Appwrite", "详细错误: ", e)
                 withContext(Dispatchers.Main) {
                     onError(e)
                 }

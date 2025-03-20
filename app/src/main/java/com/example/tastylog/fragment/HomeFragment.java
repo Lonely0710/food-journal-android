@@ -30,6 +30,7 @@ import java.util.Locale;
 import android.util.Log;
 import com.example.tastylog.utils.FragmentUtils;
 import com.example.tastylog.utils.SafeCallback;
+import com.google.android.material.button.MaterialButton;
 
 public class HomeFragment extends BaseFragment {
 
@@ -87,7 +88,27 @@ public class HomeFragment extends BaseFragment {
                 ((MainActivity) getActivity()).openFoodDetail(foodItem);
             }
         });
-        
+
+        // 初始化添加美食按钮
+        btnAddFood = view.findViewById(R.id.btn_add_food);
+        btnAddFood.setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) {
+                AddFoodFragment addFoodFragment = new AddFoodFragment();
+                
+                // 使用Fragment事务替换当前Fragment，添加动画效果
+                getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(
+                        R.anim.slide_in_right,  // 新Fragment进入动画
+                        R.anim.slide_out_left   // 当前Fragment退出动画
+                    )
+                    .replace(R.id.container, addFoodFragment)
+                    .addToBackStack(null)
+                    .commit();
+                
+            }
+        });
+
         return view;
     }
 

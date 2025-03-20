@@ -9,160 +9,37 @@
     <!-- 使用统一的Toolbar -->
     <include layout="@layout/layout_toolbar"/>
 
-    <androidx.core.widget.NestedScrollView
+    <!-- 用户信息部分 -->
+    <include
+        android:id="@+id/layout_mine_content"
+        layout="@layout/layout_mine_content" />
+
+    <!-- 添加狗狗动画 -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/dogAnimation"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/dog_phone" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <!-- 用户信息卡片 -->
-            <include 
-                android:id="@+id/layout_mine_content"
-                layout="@layout/layout_mine_content"/>
-
-            <!-- 设置选项卡片 -->
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.TastyLog.Card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- 自动备份 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="自动备份"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"/>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switch_backup"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
-
-                    <!-- 照片水印 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="照片水印"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"/>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switch_watermark"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
-
-                    <!-- 导出格式 -->
-                    <LinearLayout
-                        android:id="@+id/btn_export_format"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:gravity="center_vertical"
-                        android:background="?attr/selectableItemBackground">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="导出格式"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"/>
-
-                        <TextView
-                            android:id="@+id/tv_export_format"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PDF"
-                            android:textColor="#666666"/>
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="8dp"
-                            android:src="@drawable/ic_arrow_right"/>
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
-
-                    <!-- 主题颜色 -->
-                    <LinearLayout
-                        android:id="@+id/btn_theme_color"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:gravity="center_vertical"
-                        android:background="?attr/selectableItemBackground">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="主题颜色"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"/>
-
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@color/orange_500"/>
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="8dp"
-                            android:src="@drawable/ic_arrow_right"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+    <!-- 退出登录按钮 - 修改样式 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/ll_logout"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="#F44336"
+        android:padding="12dp"
+        android:text="退出登录"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:cornerRadius="24dp"
+        app:icon="@drawable/ic_logout"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@android:color/white" />
 
 </LinearLayout> 
