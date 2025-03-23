@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 初始价格范围 -->
+    <array name="initial_price_range">
+        <item>0</item>
+        <item>300</item>
+    </array>
+    
+    <!-- 初始评分范围 -->
+    <array name="initial_rating_range">
+        <item>0</item>
+        <item>5</item>
+    </array>
+</resources> 

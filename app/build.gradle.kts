@@ -63,4 +63,7 @@ dependencies {
     
     // 添加Osmdroid依赖
     implementation("org.osmdroid:osmdroid-android:6.1.20")
+
+    // MPAndroidChart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

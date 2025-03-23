@@ -39,144 +39,253 @@
             android:text="图表视图"/>
     </com.google.android.material.tabs.TabLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <!-- 主内容区域使用FrameLayout以支持视图切换 -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <LinearLayout
+        
+        <!-- 修改加载动画区域 -->
+        <FrameLayout
+            android:id="@+id/loading_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:visibility="gone">
+            
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loading_animation"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/cooking_loading" />
+        </FrameLayout>
 
-            <!-- 数据筛选栏 -->
+        <!-- 图表视图容器 -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/stats_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/chart_view_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- 数据筛选栏 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_date_range"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="2024年7月"
+                        android:textSize="16sp"
+                        app:icon="@drawable/ic_calendar"
+                        app:iconTint="@color/orange_500"
+                        android:textColor="@color/orange_500"/>
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_price_range"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="¥0 - ¥300"
+                        android:textSize="16sp"
+                        app:icon="@drawable/ic_money"
+                        app:iconTint="@color/orange_500"
+                        android:textColor="@color/orange_500"/>
+                </LinearLayout>
+
+                <!-- 月度消费趋势图 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="月度消费趋势"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+
+                        <!-- 使用ImageView作为折线图占位符 -->
+                        <ImageView
+                            android:id="@+id/line_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginTop="8dp"
+                            android:src="@drawable/placeholder_line_chart"
+                            android:scaleType="fitCenter"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 评分分布 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="评分分布"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+
+                        <!-- 使用ImageView作为饼图占位符 -->
+                        <ImageView
+                            android:id="@+id/pie_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginTop="8dp"
+                            android:src="@drawable/placeholder_pie_chart"
+                            android:scaleType="fitCenter"/>
+
+                        <!-- 评分图例 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <include layout="@layout/item_rating_legend"
+                                android:id="@+id/legend_5_star"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                            <include layout="@layout/item_rating_legend"
+                                android:id="@+id/legend_4_star"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                            <include layout="@layout/item_rating_legend"
+                                android:id="@+id/legend_3_star"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                            <include layout="@layout/item_rating_legend"
+                                android:id="@+id/legend_2_star"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 在chart_view_container内部添加两个容器 -->
+                <LinearLayout
+                    android:id="@+id/line_chart_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+                    
+                    <!-- 添加折线图内容 -->
+                    <!-- 现有内容可以保留在这个容器内 -->
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/pie_chart_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    
+                    <!-- 添加饼图内容 -->
+                    <!-- 可以复制一份到这个容器内 -->
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- 列表视图容器 -->
+        <LinearLayout
+            android:id="@+id/list_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- 列表筛选栏 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:padding="8dp">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_date_range"
+                    android:id="@+id/btn_date_range_list"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="2024年7月"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     app:icon="@drawable/ic_calendar"
-                    app:iconTint="@color/orange_500"
-                    android:textColor="@color/orange_500"/>
+                    app:iconTint="@color/orange_500"/>
 
                 <Space
                     android:layout_width="8dp"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_price_range"
+                    android:id="@+id/btn_filter"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="¥0 - ¥300"
-                    android:textSize="16sp"
-                    app:icon="@drawable/ic_money"
-                    app:iconTint="@color/orange_500"
-                    android:textColor="@color/orange_500"/>
+                    android:text="筛选"
+                    android:textSize="14sp"
+                    app:icon="@drawable/ic_filter"
+                    app:iconTint="@color/orange_500"/>
             </LinearLayout>
 
-            <!-- 月度消费趋势图 -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- 替换为RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_food_records"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"/>
+
+            <!-- 空状态视图 -->
+            <TextView
+                android:id="@+id/empty_view_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="月度消费趋势"
-                        android:textStyle="bold"
-                        android:textSize="16sp"/>
-
-                    <!-- 使用ImageView作为折线图占位符 -->
-                    <ImageView
-                        android:id="@+id/line_chart"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginTop="8dp"
-                        android:src="@drawable/placeholder_line_chart"
-                        android:scaleType="fitCenter"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 评分分布 -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="评分分布"
-                        android:textStyle="bold"
-                        android:textSize="16sp"/>
-
-                    <!-- 使用ImageView作为饼图占位符 -->
-                    <ImageView
-                        android:id="@+id/pie_chart"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginTop="8dp"
-                        android:src="@drawable/placeholder_pie_chart"
-                        android:scaleType="fitCenter"/>
-
-                    <!-- 评分图例 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="8dp">
-
-                        <include layout="@layout/item_rating_legend"
-                            android:id="@+id/legend_5_star"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-
-                        <include layout="@layout/item_rating_legend"
-                            android:id="@+id/legend_4_star"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-
-                        <include layout="@layout/item_rating_legend"
-                            android:id="@+id/legend_3_star"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-
-                        <include layout="@layout/item_rating_legend"
-                            android:id="@+id/legend_2_star"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:text="暂无记录"
+                android:gravity="center"
+                android:padding="16dp"
+                android:visibility="gone"/>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
+    </FrameLayout>
 </LinearLayout> 

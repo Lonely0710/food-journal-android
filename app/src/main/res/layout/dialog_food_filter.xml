@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 价格范围 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="价格范围"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/gray_900" />
+
+    <TextView
+        android:id="@+id/tv_price_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="¥0 - ¥300"
+        android:textSize="14sp"
+        android:textColor="@color/gray_700" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/price_range_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="0"
+        android:valueTo="500"
+        android:stepSize="10"
+        app:values="@array/initial_price_range"
+        app:thumbColor="@color/orange_500"
+        app:trackColorActive="@color/orange_300"
+        app:trackColorInactive="@color/gray_300"
+        app:labelBehavior="visible" />
+
+    <!-- 位置搜索 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="位置搜索"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/gray_900" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_location_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入地点关键词"
+            android:inputType="text"
+            android:singleLine="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 评分范围 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="评分范围"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/gray_900" />
+
+    <TextView
+        android:id="@+id/tv_rating_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="0 - 5 星"
+        android:textSize="14sp"
+        android:textColor="@color/gray_700" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/rating_range_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="0"
+        android:valueTo="5"
+        android:stepSize="1"
+        app:values="@array/initial_rating_range"
+        app:thumbColor="@color/orange_500"
+        app:trackColorActive="@color/orange_300"
+        app:trackColorInactive="@color/gray_300"
+        app:labelBehavior="visible" />
+
+    <!-- 标签选择 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="标签选择"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/gray_900" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group_tags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="8dp">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_tag_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我的收藏"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_tag_recommend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="推荐"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_tag_spicy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="辣"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_tag_sweet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="甜"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_tag_sour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="酸"
+            style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+    </com.google.android.material.chip.ChipGroup>
+</LinearLayout> 

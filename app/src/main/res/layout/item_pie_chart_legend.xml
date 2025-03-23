@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="4dp">
+
+    <View
+        android:id="@+id/legend_color"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@drawable/bg_rounded_8"/>
+
+    <TextView
+        android:id="@+id/legend_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        android:textColor="@color/gray_900"
+        android:text="5星"/>
+
+    <TextView
+        android:id="@+id/legend_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        android:textColor="@color/gray_600"
+        android:text="(12)"/>
+</LinearLayout> 

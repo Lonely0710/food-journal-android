@@ -2414,3 +2414,220 @@ private void loadUserInfo() {
    - 使用统一的状态管理机制
    - 添加详细的日志便于调试
    - 优先考虑用户体验
+
+## 2025-03-23 TastyLog统计界面数据可视化实现
+
+### 需求概述
+统计界面需要提供两种数据可视化方式：列表视图和图表视图，并支持多维度筛选功能。
+
+### 实现方案
+
+#### 1. 视图切换实现
+使用 TabLayout 实现列表和图表视图的切换：
+```java
+// 设置图表切换监听器
+viewSwitcher.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        toggleViewVisibility(tab.getPosition());
+    }
+    
+    // ... 其他回调方法
+});
+
+// 视图切换方法
+private void toggleViewVisibility(int position) {
+    View listViewContainer = getView().findViewById(R.id.list_view_container);
+    View chartViewContainer = getView().findViewById(R.id.chart_view_container);
+    
+    if (position == 0) { // 列表视图
+        listViewContainer.setVisibility(View.VISIBLE);
+        chartViewContainer.setVisibility(View.GONE);
+    } else { // 图表视图
+        listViewContainer.setVisibility(View.GONE);
+        chartViewContainer.setVisibility(View.VISIBLE);
+    }
+}
+```
+
+#### 2. 列表视图实现
+- 使用 RecyclerView 展示数据，采用微信式日期分组设计
+- 每个日期组包含当日总支出和对应食物记录
+- 使用自定义 ViewHolder 和 Adapter 实现不同类型项的显示
+- 添加自定义 ItemDecoration 实现分组间隔
+
+```java
+// 列表适配器核心逻辑
+public void setData(List<FoodItem> foodItems) {
+    // 按日期分组
+    Map<String, List<FoodItem>> groupedItems = new HashMap<>();
+    Map<String, Double> dailyExpenses = new HashMap<>();
+
+    for (FoodItem item : foodItems) {
+        String dateStr = item.getTime().split(" ")[0];
+        if (!groupedItems.containsKey(dateStr)) {
+            groupedItems.put(dateStr, new ArrayList<>());
+            dailyExpenses.put(dateStr, 0.0);
+        }
+        groupedItems.get(dateStr).add(item);
+        
+        // 计算每日支出
+        try {
+            double price = Double.parseDouble(item.getPrice().replace("¥", ""));
+            dailyExpenses.put(dateStr, dailyExpenses.get(dateStr) + price);
+        } catch (NumberFormatException e) {
+            // 忽略格式错误
+        }
+    }
+    
+    // 构建最终列表项，包含日期头部和食物项
+    items.clear();
+    for (Map.Entry<String, List<FoodItem>> entry : sortedGroups.entrySet()) {
+        items.add(new DateHeader(entry.getKey(), dailyExpenses.get(entry.getKey())));
+        items.addAll(entry.getValue());
+    }
+    
+    notifyDataSetChanged();
+}
+```
+
+#### 3. 图表视图实现
+使用 MPAndroidChart 库实现两种图表：
+
+**折线图 (消费趋势)**
+```java
+private void setupLineChart() {
+    // 设置折线图外观
+    lineChart.setDrawGridBackground(false);
+    lineChart.getDescription().setEnabled(false);
+    lineChart.setDrawBorders(false);
+    
+    // 设置x轴样式
+    XAxis xAxis = lineChart.getXAxis();
+    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    xAxis.setGranularity(1f);
+    xAxis.setValueFormatter(new IndexAxisValueFormatter(dateLabels));
+    
+    // 设置数据
+    LineDataSet dataSet = new LineDataSet(entries, "每日消费");
+    dataSet.setColor(ContextCompat.getColor(requireContext(), R.color.orange_500));
+    dataSet.setValueTextColor(ContextCompat.getColor(requireContext(), R.color.gray_700));
+    dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.orange_500));
+    
+    lineChart.setData(new LineData(dataSet));
+    lineChart.invalidate();
+}
+```
+
+**饼图 (评分分布)**
+```java
+private void setupPieChart() {
+    // 设置饼图外观
+    pieChart.setUsePercentValues(true);
+    pieChart.getDescription().setEnabled(false);
+    pieChart.setExtraOffsets(5, 10, 5, 5);
+    pieChart.setDragDecelerationFrictionCoef(0.95f);
+    pieChart.setDrawHoleEnabled(true);
+    pieChart.setHoleColor(Color.WHITE);
+    
+    // 设置数据
+    PieDataSet dataSet = new PieDataSet(entries, "评分分布");
+    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+    
+    PieData pieData = new PieData(dataSet);
+    pieData.setValueFormatter(new PercentFormatter(pieChart));
+    pieData.setValueTextSize(11f);
+    
+    pieChart.setData(pieData);
+    pieChart.invalidate();
+    
+    // 创建图例
+    updatePieChartLegend(entries);
+}
+```
+
+#### 4. 筛选功能实现
+实现多维度筛选，包括：
+- 日期范围筛选
+- 价格范围筛选
+- 位置搜索筛选
+- 评分范围筛选
+- 标签筛选
+
+关键实现：
+```java
+// 日期选择器
+private void showListDatePicker() {
+    DatePickerDialog datePickerDialog = new DatePickerDialog(
+        requireContext(),
+        (view, year, month, dayOfMonth) -> {
+            // 设置选中月份的第一天到最后一天
+            Calendar newCal = Calendar.getInstance();
+            newCal.set(year, month, 1);
+            startDate = newCal.getTime();
+            
+            newCal.set(year, month, newCal.getActualMaximum(Calendar.DAY_OF_MONTH));
+            endDate = newCal.getTime();
+            
+            // 更新按钮文本并重新加载数据
+            btnListDateFilter.setText(yearMonthFormat.format(startDate));
+            loadData();
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    );
+    
+    datePickerDialog.show();
+}
+
+// 筛选对话框
+private void showListFilterDialog() {
+    // 创建包含价格、位置、评分和标签筛选的对话框
+    // 使用MaterialAlertDialogBuilder和自定义布局
+    
+    // 筛选数据加载
+    private List<FoodItem> filterFoodItems(List<FoodItem> foodItems) {
+        // 按各种条件筛选数据
+        // 包括日期、价格、位置、评分和标签
+    }
+}
+```
+
+### 样式设计
+
+#### 列表视图
+1. **微信风格日期分组**
+   - 灰色背景的日期头部，包含日期、星期和当日总支出
+   - 白色背景的食物项，包含食物图片、名称、餐厅和价格
+   - 细线分隔不同食物项
+
+2. **筛选按钮样式**
+   - 使用Material Design的OutlinedButton
+   - 橙色图标和文字，提高辨识度
+   - 动态更新按钮文本显示当前筛选条件
+
+#### 图表视图
+1. **折线图样式**
+   - 简洁的网格线和轴标签
+   - 橙色的数据点和曲线
+   - 浅色背景的图表容器卡片
+
+2. **饼图样式**
+   - 使用Material Design配色方案
+   - 中心留白，增强视觉效果
+   - 自定义图例样式，展示每项的数量和比例
+
+3. **筛选区样式**
+   - 横向排列的筛选按钮
+   - 使用Material组件的阴影和圆角效果
+   - 响应式布局适应不同屏幕尺寸
+
+### 参考链接
+- [MPAndroidChart文档](https://github.com/PhilJay/MPAndroidChart/wiki)
+- [Material Design组件指南](https://material.io/components?platform=android)
+- [RecyclerView多类型列表实现](https://developer.android.com/guide/topics/ui/layout/recyclerview)
+- [Android图表最佳实践](https://medium.com/androiddevelopers/beautiful-charts-in-android-using-mpandroidchart-8a7d0116827f)
+- [折线图参考](https://blog.csdn.net/gao511147456/article/details/108412584)
+- [饼图参考](https://www.jianshu.com/p/8f06635642bb)
+- [DatePickerDialog使用指南](https://developer.android.com/guide/topics/ui/controls/pickers)
