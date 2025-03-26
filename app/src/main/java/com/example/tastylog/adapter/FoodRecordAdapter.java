@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * 食物记录适配器
+ * 用于展示按日期分组的食物记录，包括日期标题和每日消费总计
+ */
 public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int VIEW_TYPE_DATE_HEADER = 0;
@@ -37,8 +40,11 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private SimpleDateFormat displayDateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault());
 
-    // 设置数据并按日期分组
-    public void setData(List<FoodItem> foodItems) {
+    /**
+     * 设置数据并按日期分组
+     * @param foodItems 食物项列表
+     */
+public void setData(List<FoodItem> foodItems) {
         // 按日期分组
         Map<String, List<FoodItem>> groupedItems = new HashMap<>();
         Map<String, Double> dailyExpenses = new HashMap<>();
@@ -51,7 +57,7 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     dailyExpenses.put(dateStr, 0.0);
                 }
                 groupedItems.get(dateStr).add(item);
-                
+
                 // 计算每日总支出
                 try {
                     String priceStr = item.getPrice();
@@ -79,17 +85,17 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         for (Map.Entry<String, List<FoodItem>> entry : sortedGroups.entrySet()) {
             String dateStr = entry.getKey();
             List<FoodItem> dailyItems = entry.getValue();
-            
+
             // 添加日期头部
             items.add(new DateHeader(dateStr, dailyExpenses.getOrDefault(dateStr, 0.0)));
-            
+
             // 为每个日期组按时间排序
             Collections.sort(dailyItems, (item1, item2) -> item2.getTime().compareTo(item1.getTime()));
-            
+
             // 添加该日期的所有食物项
             items.addAll(dailyItems);
         }
-        
+
         notifyDataSetChanged();
     }
 
@@ -102,7 +108,7 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        
+
         if (viewType == VIEW_TYPE_DATE_HEADER) {
             View view = inflater.inflate(R.layout.item_date_header_wx_style, parent, false);
             return new DateHeaderViewHolder(view);
@@ -148,13 +154,13 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (date != null) {
                     // 设置日期
                     tvDate.setText(new SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault()).format(date));
-                    
+
                     // 设置星期
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
                     int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1; // 0-6
                     tvWeekday.setText(WEEKDAYS[dayOfWeek]);
-                    
+
                     // 设置每日支出
                     tvDailyExpense.setText(String.format(Locale.getDefault(), "支出: ¥%.2f", header.getDailyExpense()));
                 }
@@ -185,7 +191,7 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public void bind(FoodItem foodItem) {
             tvFoodName.setText(foodItem.getTitle());
             tvRestaurant.setText(foodItem.getLocation() != null ? foodItem.getLocation() : "");
-            
+
             // 格式化价格
             String price = foodItem.getPrice();
             if (price != null && !price.isEmpty()) {
@@ -196,7 +202,7 @@ public class FoodRecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             } else {
                 tvPrice.setText("¥0.00");
             }
-            
+
             // 加载图片
             if (foodItem.getImageUrl() != null && !foodItem.getImageUrl().isEmpty()) {
                 Glide.with(ivFoodImage.getContext())

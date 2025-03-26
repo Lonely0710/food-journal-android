@@ -14,28 +14,30 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.example.tastylog.R;
-import com.example.tastylog.config.Config;
-import com.example.tastylog.model.FoodItem;
-import com.example.tastylog.data.FoodRepository;
-import com.example.tastylog.utils.FragmentUtils;
 import com.example.tastylog.adapter.FoodItemInfoWindow;
+import com.example.tastylog.config.Config;
+import com.example.tastylog.data.FoodRepository;
+import com.example.tastylog.model.FoodItem;
+import com.example.tastylog.utils.FragmentUtils;
 import com.example.tastylog.utils.GeocodingHelper;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.infowindow.InfoWindow;
-import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 地图Fragment
+ * 在地图上展示食物记录的位置分布
+ */
 public class MapFragment extends BaseFragment implements MapListener {
 
     private static final String TAG = "MapFragment";
@@ -61,6 +63,10 @@ public class MapFragment extends BaseFragment implements MapListener {
         }
     }
 
+    /**
+     * 初始化地图
+     * 设置地图基本配置和加载数据
+     */
     private void initMap() {
         try {
             // 设置瓦片源，使用OpenStreetMap先测试是否有网络

@@ -1,6 +1,5 @@
 package com.example.tastylog.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,8 +10,16 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
+/**
+ * 食物地图标记信息窗口
+ * 用于在地图上显示食物项的详细信息
+ */
 public class FoodItemInfoWindow extends InfoWindow {
     
+    /**
+     * 构造函数
+     * @param mapView 地图视图实例
+     */
     public FoodItemInfoWindow(MapView mapView) {
         super(R.layout.custom_info_window, mapView);
     }

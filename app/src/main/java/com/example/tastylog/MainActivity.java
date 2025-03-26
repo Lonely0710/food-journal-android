@@ -1,41 +1,28 @@
 package com.example.tastylog;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import com.example.tastylog.adapter.FoodCardAdapter;
-import com.example.tastylog.decoration.SpaceItemDecoration;
-import com.example.tastylog.model.FoodItem;
 import com.example.tastylog.fragment.AddFoodFragment;
 import com.example.tastylog.fragment.FoodDetailFragment;
 import com.example.tastylog.fragment.HomeFragment;
+import com.example.tastylog.fragment.MapFragment;
 import com.example.tastylog.fragment.MineFragment;
 import com.example.tastylog.fragment.StatsFragment;
-import com.example.tastylog.fragment.MapFragment;
+import com.example.tastylog.model.FoodItem;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-
-import com.example.tastylog.AppwriteWrapper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+/**
+ * 应用主界面
+ * 作为容器管理各个功能Fragment的加载和切换
+ */
 public class MainActivity extends AppCompatActivity {
     
     private FloatingActionButton fab;

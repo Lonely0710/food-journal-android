@@ -3,29 +3,32 @@ package com.example.tastylog;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.tastylog.config.AppConfig;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.HashMap;
-import java.util.Date;
 
+import io.appwrite.models.Document;
 import io.appwrite.models.Session;
 import io.appwrite.models.User;
-import io.appwrite.models.Document;
-import com.example.tastylog.config.AppConfig;
 
 /**
- * Java 包装类，访问 Kotlin 的 Appwrite 对象
+ * Appwrite服务包装类
+ * 提供单例访问模式，简化Appwrite实例的管理和使用
  */
 public class AppwriteWrapper {
     private static final String TAG = "AppwriteWrapper";
     private static AppwriteWrapper instance;
     
-    // 私有构造函数，防止外部实例化
     private AppwriteWrapper() {
+        // 私有构造函数，防止外部实例化
     }
     
-    // 单例模式获取实例
+    /**
+     * 获取单例实例
+     * @return AppwriteWrapper实例
+     */
     public static synchronized AppwriteWrapper getInstance() {
         if (instance == null) {
             instance = new AppwriteWrapper();

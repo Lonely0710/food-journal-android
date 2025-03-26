@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 
 import org.osmdroid.config.Configuration;
 
-import com.example.tastylog.config.Config;
-
 public class TastyLogApplication extends Application {
 
     @Override

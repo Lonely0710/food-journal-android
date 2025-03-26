@@ -1,47 +1,40 @@
 package com.example.tastylog.fragment;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.EditText;
-import android.app.AlertDialog;
-import android.net.Uri;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.app.Activity;
-import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.os.Environment;
-import androidx.core.app.ActivityCompat;
+
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.airbnb.lottie.LottieAnimationView;
 import com.example.tastylog.Appwrite;
-import com.example.tastylog.R;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.example.tastylog.AppwriteWrapper;
 import com.example.tastylog.LoginActivity;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.tastylog.R;
 import com.example.tastylog.config.AppConfig;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,13 +42,10 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import io.appwrite.models.User;
-import io.appwrite.models.Document;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-
+/**
+ * 个人资料页面，负责展示和管理用户信息
+ * 功能包括：显示用户头像和名称、修改个人信息、退出登录等
+ */
 public class MineFragment extends BaseFragment {
     private static final String TAG = "MineFragment";
     private ImageView ivUserAvatar;
@@ -71,26 +61,20 @@ public class MineFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mine, container, false);
         
-        // 查找include的布局中的控件
+        // 初始化视图组件
         View userInfoView = view.findViewById(R.id.layout_mine_content);
         ivUserAvatar = userInfoView.findViewById(R.id.ivUserAvatar);
         tvUserName = userInfoView.findViewById(R.id.tvUserName);
         loadingAnimation = userInfoView.findViewById(R.id.loadingAnimation);
         
-        // 显示加载状态
         showLoadingState();
         
-        // 初始化退出登录按钮
+        // 设置点击事件监听
         View logoutButton = view.findViewById(R.id.ll_logout);
         logoutButton.setOnClickListener(v -> showLogoutDialog());
-        
-        // 添加头像点击事件
         ivUserAvatar.setOnClickListener(v -> showPhotoOptions());
-        
-        // 添加用户名点击事件
         tvUserName.setOnClickListener(v -> showEditNameDialog());
         
-        // 加载用户信息
         loadUserInfo();
         
         return view;
@@ -362,7 +346,6 @@ public class MineFragment extends BaseFragment {
             Toast.makeText(requireContext(), "处理图片失败: " + e.getMessage(), 
                          Toast.LENGTH_SHORT).show();
         } finally {
-            // 确保关闭流
             try {
                 if (inputStream != null) {
                     inputStream.close();

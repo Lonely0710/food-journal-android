@@ -2,36 +2,51 @@ package com.example.tastylog
 
 import android.content.Context
 import android.util.Log
+import com.example.tastylog.config.AppConfig
+import com.example.tastylog.model.FoodItem
 import io.appwrite.Client
 import io.appwrite.ID
-import io.appwrite.models.*
-import io.appwrite.services.*
-import io.appwrite.exceptions.AppwriteException
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.util.UUID
-import kotlin.concurrent.timer
-import java.net.URLEncoder
-import com.example.tastylog.model.FoodItem
-import com.example.tastylog.config.AppConfig
-import java.util.Date
 import io.appwrite.Query
+import io.appwrite.models.Document
+import io.appwrite.models.InputFile
+import io.appwrite.models.Session
+import io.appwrite.models.User
+import io.appwrite.services.Account
+import io.appwrite.services.Databases
+import io.appwrite.services.Storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.net.URLEncoder
 
+/**
+ * Appwrite 服务封装类
+ * 负责与Appwrite后端服务交互，包括用户认证、数据读写和文件存储等功能
+ */
 object Appwrite {
     lateinit var client: Client
     lateinit var account: Account
     lateinit var databases: Databases
     lateinit var storage: Storage
 
-    // 添加自定义协程作用域，替代GlobalScope
+    // 使用自定义协程作用域替代GlobalScope
     private val appwriteScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    // 添加清理方法
+    /**
+     * 取消所有正在进行的网络请求
+     */
     fun cancelAllRequests() {
         appwriteScope.coroutineContext.cancelChildren()
     }
 
+    /**
+     * 初始化Appwrite客户端
+     * @param context 应用上下文
+     */
     fun init(context: Context) {
         client = Client(context)
             .setEndpoint("https://cloud.appwrite.io/v1")
@@ -46,18 +61,23 @@ object Appwrite {
     // 回调方式 API - 适用于 Java 调用
     //===================================
 
-    // 登录 - 回调版本
+    /**
+     * 用户登录
+     * @param email 用户邮箱
+     * @param password 用户密码
+     * @param onSuccess 登录成功回调
+     * @param onError 登录失败回调
+     */
     fun loginWithCallback(email: String, password: String, onSuccess: (Session) -> Unit, onError: (Exception) -> Unit) {
         appwriteScope.launch {
             try {
-                // 先尝试删除现有会话
+                // 清除现有会话
                 try {
                     account.deleteSession("current")
                 } catch (e: Exception) {
-                    // 忽略错误
+                    // 忽略错误，可能没有现有会话
                 }
 
-                // 使用正确的邮箱密码登录方法
                 val session = account.createEmailPasswordSession(email, password)
                 Log.d("Appwrite", "登录成功，用户ID: ${session.userId}")
 
@@ -107,7 +127,7 @@ object Appwrite {
                     val session = account.createEmailPasswordSession(email, password)
                     Log.d("Appwrite", "自动登录成功: ${session.userId}")
 
-                    // 4. 创建初始食物列表
+                // 4. 创建初始食物列表
                     createInitialFoodListForUser(userId)
                 } catch (e: Exception) {
                     Log.e("Appwrite", "自动登录失败: ${e.message}", e)

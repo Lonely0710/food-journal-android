@@ -1,16 +1,13 @@
 package com.example.tastylog.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.RatingBar;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +15,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
+import com.example.tastylog.AppwriteWrapper;
+import com.example.tastylog.FoodDetailActivity;
 import com.example.tastylog.MainActivity;
 import com.example.tastylog.R;
 import com.example.tastylog.adapter.FoodImageAdapter;
@@ -26,19 +24,25 @@ import com.example.tastylog.model.FoodItem;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.example.tastylog.FoodDetailActivity;
-import com.example.tastylog.AppwriteWrapper;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 食物详情Fragment
+ * 
+ * 展示食物记录的详细信息
+ */
 public class FoodDetailFragment extends Fragment {
 
     private FoodItem foodItem;
 
+    /**
+     * 创建FoodDetailFragment实例
+     * 
+     * @param foodItem 要展示的食物记录
+     * @return FoodDetailFragment实例
+     */
     public static FoodDetailFragment newInstance(FoodItem foodItem) {
         FoodDetailFragment fragment = new FoodDetailFragment();
         Bundle args = new Bundle();

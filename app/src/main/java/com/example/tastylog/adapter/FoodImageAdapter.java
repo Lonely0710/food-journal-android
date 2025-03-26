@@ -3,21 +3,28 @@ package com.example.tastylog.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.tastylog.R;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 食物图片适配器
+ * 用于在ViewPager中展示食物的高清大图，支持缩放和滑动浏览
+ */
 public class FoodImageAdapter extends RecyclerView.Adapter<FoodImageAdapter.ViewHolder> {
     private List<String> imageUrls = new ArrayList<>();
 
+    /**
+     * 图片视图持有者
+     * 使用PhotoView提供图片缩放功能
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
         PhotoView photoView;
 
@@ -62,6 +69,10 @@ public class FoodImageAdapter extends RecyclerView.Adapter<FoodImageAdapter.View
         return imageUrls.size() > 0 ? imageUrls.size() : 1; // 至少显示一张占位图
     }
 
+    /**
+     * 设置图片URL列表
+     * @param imageUrls 图片URL列表，为null时会创建空列表
+     */
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = (imageUrls != null) ? imageUrls : new ArrayList<>();
         notifyDataSetChanged();

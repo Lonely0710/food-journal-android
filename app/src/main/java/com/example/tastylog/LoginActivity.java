@@ -18,6 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+/**
+ * 用户登录界面
+ * 提供邮箱密码登录和注册功能
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";

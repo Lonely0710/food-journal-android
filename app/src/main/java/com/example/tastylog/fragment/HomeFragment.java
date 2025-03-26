@@ -1,6 +1,7 @@
 package com.example.tastylog.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,30 +9,31 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.tastylog.R;
 import com.example.tastylog.MainActivity;
+import com.example.tastylog.R;
 import com.example.tastylog.adapter.FoodCardAdapter;
-import com.example.tastylog.model.FoodItem;
-import com.example.tastylog.decoration.SpaceItemDecoration;
 import com.example.tastylog.data.FoodRepository;
+import com.example.tastylog.decoration.SpaceItemDecoration;
+import com.example.tastylog.model.FoodItem;
+import com.example.tastylog.utils.SafeCallback;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import android.util.Log;
-import com.example.tastylog.utils.FragmentUtils;
-import com.example.tastylog.utils.SafeCallback;
-import com.google.android.material.button.MaterialButton;
 
+/**
+ * 首页Fragment
+ * 展示食物列表和提供筛选搜索功能
+ */
 public class HomeFragment extends BaseFragment {
 
     private RecyclerView recyclerView;

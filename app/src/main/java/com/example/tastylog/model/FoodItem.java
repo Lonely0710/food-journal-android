@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 食物数据模型
+ * 包含食物的所有属性和转换方法
+ */
 public class FoodItem implements Parcelable, Serializable {
     private String id;
     private String title;

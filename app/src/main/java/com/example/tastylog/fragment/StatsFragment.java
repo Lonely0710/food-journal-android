@@ -1,15 +1,16 @@
 package com.example.tastylog.fragment;
 
 import android.app.DatePickerDialog;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,12 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 import com.example.tastylog.R;
-import com.example.tastylog.model.FoodItem;
-import com.example.tastylog.data.FoodRepository;
-import com.example.tastylog.utils.SafeCallback;
 import com.example.tastylog.adapter.FoodRecordAdapter;
+import com.example.tastylog.data.FoodRepository;
+import com.example.tastylog.data.FoodRepository.FoodListCallback;
+import com.example.tastylog.model.FoodItem;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -33,19 +35,14 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.tabs.TabLayout;
-import com.example.tastylog.fragment.BaseFragment;
-import com.github.mikephil.charting.components.Legend;
-import android.graphics.Rect;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.example.tastylog.data.FoodRepository.FoodListCallback;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.slider.RangeSlider;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -55,14 +52,17 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.HashSet;
 import java.util.Set;
-import java.lang.reflect.Field;
+import java.util.TreeMap;
 
+/**
+ * 统计Fragment
+ * 展示食物记录的统计数据
+ */
 public class StatsFragment extends BaseFragment {
 
     private static final String TAG = "StatsFragment";
@@ -537,6 +537,12 @@ public class StatsFragment extends BaseFragment {
         return result;
     }
 
+    /**
+     * 更新图表
+     * 根据筛选后的数据更新统计图表
+     * 
+     * @param foodItems 筛选后的食物记录列表
+     */
     private void updateCharts(List<FoodItem> foodItems) {
         if (foodItems.isEmpty()) {
             showEmptyCharts();

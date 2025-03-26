@@ -2,11 +2,8 @@ package com.example.tastylog.fragment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -15,32 +12,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AlertDialog;
 
-import com.bumptech.glide.Glide;
+import com.example.tastylog.AppwriteWrapper;
 import com.example.tastylog.MainActivity;
 import com.example.tastylog.R;
-import com.example.tastylog.AppwriteWrapper;
 import com.example.tastylog.model.FoodItem;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +46,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * 编辑食物Fragment
+ * 
+ * 允许用户编辑已有的食物记录
+ */
 public class EditFoodFragment extends BaseFragment {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -74,6 +72,12 @@ public class EditFoodFragment extends BaseFragment {
     private FoodItem foodItemToEdit;
     private boolean imageChanged = false;
 
+    /**
+     * 创建EditFoodFragment实例
+     * 
+     * @param foodItem 要编辑的食物记录
+     * @return EditFoodFragment实例
+     */
     public static EditFoodFragment newInstance(FoodItem foodItem) {
         EditFoodFragment fragment = new EditFoodFragment();
         Bundle args = new Bundle();

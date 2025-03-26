@@ -3,12 +3,18 @@ package com.example.tastylog.fragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+
 import com.example.tastylog.R;
 
+/**
+ * Fragment基类
+ * 提供所有Fragment共用的基础功能和生命周期管理
+ */
 public abstract class BaseFragment extends Fragment {
     
     @Override

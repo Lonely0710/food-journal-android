@@ -7,19 +7,22 @@ import android.util.Log;
 import com.example.tastylog.AppwriteWrapper;
 import com.example.tastylog.model.FoodItem;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.Map;
 
-// 添加Document类的导入
 import io.appwrite.models.Document;
 
+/**
+ * 食物数据仓库类
+ * 
+ * 负责管理食物记录的数据访问
+ */
 public class FoodRepository {
     private static final String TAG = "FoodRepository";
     private static FoodRepository instance;
@@ -31,6 +34,12 @@ public class FoodRepository {
         appwrite = AppwriteWrapper.getInstance();
     }
 
+    /**
+     * 获取FoodRepository单例实例
+     *
+     * @param context 应用上下文
+     * @return FoodRepository实例
+     */
     public static synchronized FoodRepository getInstance(Context context) {
         if (instance == null) {
             instance = new FoodRepository(context.getApplicationContext());
@@ -38,24 +47,35 @@ public class FoodRepository {
         return instance;
     }
 
+    /**
+     * 食物列表数据回调接口
+     */
     public interface FoodListCallback {
         void onFoodListLoaded(List<FoodItem> foodItems);
         void onError(Exception e);
     }
 
+    /**
+     * 单个食物记录回调接口
+     */
     public interface FoodItemCallback {
         void onSuccess(FoodItem foodItem);
         void onError(Exception e);
     }
 
-    // 获取所有食物记录
+    /**
+     * 获取所有食物记录
+     * 从Appwrite云端获取当前用户的所有食物记录
+     *
+     * @param callback 数据加载回调
+     */
     public void getAllFoodItems(FoodListCallback callback) {
         executor.execute(() -> {
             try {
                 // 获取当前用户ID
                 String userId = AppwriteWrapper.getInstance().getCurrentUserId();
                 
-                // 如果没有用户ID，返回空列表
+                // 如果没有用户ID,返回空列表
                 if (TextUtils.isEmpty(userId)) {
                     callback.onFoodListLoaded(new ArrayList<>());
                     return;
@@ -63,12 +83,6 @@ public class FoodRepository {
                 
                 // 从Appwrite获取数据
                 fetchFoodItemsFromAppwrite(userId, callback);
-                
-                // 注释掉测试数据部分
-                // List<FoodItem> foodItems = getTestData();
-                // cachedFoodItems.clear();
-                // cachedFoodItems.addAll(foodItems);
-                // callback.onFoodListLoaded(foodItems);
             } catch (Exception e) {
                 Log.e(TAG, "Error loading food items", e);
                 callback.onError(e);
@@ -76,18 +90,19 @@ public class FoodRepository {
         });
     }
 
-    // 添加新的食物记录
+    /**
+     * 添加新的食物记录
+     *
+     * @param foodItem 要添加的食物记录
+     * @param callback 添加结果回调
+     */
     public void addFoodItem(FoodItem foodItem, FoodItemCallback callback) {
         executor.execute(() -> {
             try {
-                // 转换为JSON
+                // 转换为JSON格式
                 JSONObject json = foodItemToJson(foodItem);
                 
-                // 调用Appwrite API创建文档
-                // 这里简化处理，实际应该调用Appwrite API
-                // appwrite.createDocument("foodItems", json.toString(), ...)
-                
-                // 更新缓存
+                // 更新本地缓存
                 cachedFoodItems.add(foodItem);
                 
                 callback.onSuccess(foodItem);
@@ -98,51 +113,54 @@ public class FoodRepository {
         });
     }
 
-    // 将FoodItem转换为JSON，匹配Appwrite数据库结构
+    /**
+     * 将FoodItem对象转换为JSON格式
+     * 转换后的JSON结构匹配Appwrite数据库要求
+     *
+     * @param foodItem 要转换的食物记录
+     * @return 转换后的JSON对象
+     * @throws JSONException JSON转换异常
+     */
     private JSONObject foodItemToJson(FoodItem foodItem) throws JSONException {
         JSONObject json = new JSONObject();
+        
+        // 设置基本字段
         json.put("food_id", foodItem.getId());
         json.put("title", foodItem.getTitle());
         json.put("time", foodItem.getTime());
         json.put("rating", foodItem.getRating());
         
-        // 价格转换为Double（如果可能）
+        // 处理价格字段 - 移除货币符号并转换为数值
         try {
-            // 移除价格中的货币符号和"/人"等文本
             String priceStr = foodItem.getPrice().replaceAll("[^0-9.]", "");
             double priceValue = Double.parseDouble(priceStr);
             json.put("price", priceValue);
         } catch (NumberFormatException e) {
-            // 如果转换失败，保存原始字符串
             json.put("price", foodItem.getPrice());
         }
         
-        // 标签处理 - 数据库只支持单个标签，我们取第一个或连接所有标签
+        // 处理标签 - 选择第一个标签或连接所有标签
         List<String> tags = foodItem.getTags();
         if (tags != null && !tags.isEmpty()) {
-            // 选项1：只使用第一个标签
             json.put("tag", tags.get(0));
-            
-            // 选项2：将所有标签连接为一个字符串（以逗号分隔）
-            // json.put("tag", TextUtils.join(", ", tags));
         } else {
             json.put("tag", "");
         }
         
-        // 图片URL - 使用img_url字段名
+        // 设置图片URL和用户ID
         json.put("img_url", foodItem.getImageUrl());
-        
-        // 添加用户ID - 这个需要从当前登录用户获取
-        // 这里假设我们有一个方法可以获取当前用户ID
-        String userId = AppwriteWrapper.getInstance().getCurrentUserId();
-        json.put("user_id", userId);
+        json.put("user_id", AppwriteWrapper.getInstance().getCurrentUserId());
         
         return json;
     }
 
-    // 从Appwrite获取用户的食物记录
+    /**
+     * 从Appwrite获取用户的食物记录
+     *
+     * @param userId 用户ID
+     * @param callback 数据加载回调
+     */
     private void fetchFoodItemsFromAppwrite(String userId, FoodListCallback callback) {
-        // 调用Appwrite.kt中的方法
         AppwriteWrapper.getInstance().getUserFoodItems(
             userId,
             documents -> {
@@ -160,12 +178,15 @@ public class FoodRepository {
                             Log.d(TAG, "Price: " + data.get("price") + " (Class: " + data.get("price").getClass().getName() + ")");
                         }
                         
+                        // 转换为FoodItem对象
                         FoodItem item = documentToFoodItem(document);
                         foodItems.add(item);
                         
                         // 添加转换后的日志
                         Log.d(TAG, "Converted FoodItem: " + item.getTitle() + ", Rating: " + item.getRating() + ", Price: " + item.getPrice());
                     }
+                    
+                    // 更新缓存并回调
                     cachedFoodItems.clear();
                     cachedFoodItems.addAll(foodItems);
                     callback.onFoodListLoaded(foodItems);
@@ -181,12 +202,17 @@ public class FoodRepository {
         );
     }
 
-    // 将Appwrite Document转换为FoodItem
+    /**
+     * 将Appwrite文档转换为FoodItem对象
+     *
+     * @param document Appwrite文档对象
+     * @return 转换后的FoodItem对象
+     */
     private FoodItem documentToFoodItem(Document<Map<String, Object>> document) {
         FoodItem item = new FoodItem();
         Map<String, Object> data = document.getData();
         
-        // 设置文档ID - 这是关键，需要添加这一行
+        // 设置文档ID和食物ID
         item.setDocumentId(document.getId());
         
         // 设置food_id - 存在时使用，不存在时才用document.getId()

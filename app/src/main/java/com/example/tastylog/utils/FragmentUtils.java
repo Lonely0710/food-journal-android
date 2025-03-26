@@ -1,6 +1,7 @@
 package com.example.tastylog.utils;
 
 import android.util.Log;
+
 import androidx.fragment.app.Fragment;
 
 public class FragmentUtils {

@@ -21,6 +21,10 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 食物卡片适配器
+ * 负责将食物数据列表绑定到RecyclerView上并处理交互事件
+ */
 public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHolder> {
     private List<FoodItem> foodList = new ArrayList<>();
     private OnItemClickListener listener;
@@ -29,6 +33,10 @@ public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHo
         void onItemClick(FoodItem foodItem);
     }
 
+    /**
+     * 设置点击监听器
+     * @param listener 卡片点击事件处理接口
+     */
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
@@ -106,6 +114,10 @@ public class FoodCardAdapter extends RecyclerView.Adapter<FoodCardAdapter.ViewHo
         return foodList.size();
     }
 
+    /**
+     * 卡片项视图持有者
+     * 缓存UI组件引用提高滚动性能
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivFood;
         TextView tvTitle;

@@ -10,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tastylog.fragment.FoodDetailFragment;
 import com.example.tastylog.model.FoodItem;
-import com.example.tastylog.AppwriteWrapper;
-import com.example.tastylog.MainActivity;
 
 public class FoodDetailActivity extends AppCompatActivity {
 
