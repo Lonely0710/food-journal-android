@@ -26,7 +26,7 @@
   <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261750751.png" width="30%" alt="邮箱登录界面"> 
   <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261750759.png" width="30%" alt="用户注册界面">
   
-  *图1: 应用启动与身份验证流程*
+  应用启动与身份验证流程
 </div>
 
 ---
@@ -40,40 +40,40 @@
   </div>
   
   <div style="margin-top:20px">
-    <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261750646.png" width="45%" alt="空状态提示">
-    <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261750627.png" width="45%" alt="新增记录表单">
+    <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261750646.png" width="30%" alt="空状态提示">
+    <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261750627.png" width="30%" alt="新增记录表单">
   </div>
   
-  *图2: 主页功能与数据录入交互*
+  主页功能与数据录入交互
 </div>
 
 ---
 
 ### 📈 数据分析
 <div align="center">
-  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202504070131202.png" width="45%" alt="筛选统计列表">
-  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751904.png" width="45%" alt="可视化图表">
+  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202504070131202.png" width="30%" alt="筛选统计列表">
+  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751904.png" width="30%" alt="可视化图表">
   
-  *图3: 数据统计与分析视图*
+  数据统计与分析视图
 </div>
 
 ---
 
 ### 🌍 地理分布
 <div align="center">
-  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751479.png" width="45%" alt="美食地图概览">
-  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751409.png" width="45%" alt="位置标记详情">
+  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751479.png" width="30%" alt="美食地图概览">
+  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751409.png" width="30%" alt="位置标记详情">
   
-  *图4: 地理位置标记与探索*
+  地理位置标记与探索
 </div>
 
 ---
 
 ### 👤 用户管理
 <div align="center">
-  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751704.png" width="60%" alt="个人资料管理">
+  <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202503261751704.png" width="30%" alt="个人资料管理">
   
-  *图5: 账户与个人信息管理*
+  账户与个人信息管理
 </div>
 
 ## 🏗️ 技术架构
