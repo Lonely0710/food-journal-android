@@ -33,6 +33,16 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val outputFileName = "food-journal_${variant.buildType.name}_v${variant.versionName}.apk"
+                output.outputFileName = outputFileName
+            }
+    }
 }
 
 dependencies {
@@ -57,9 +67,6 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0") {
         exclude(group = "com.android.support")
     }
-    // 添加Navigation依赖
-    implementation("androidx.navigation:navigation-fragment:2.5.3")
-    implementation("androidx.navigation:navigation-ui:2.5.3")
     
     // 添加Osmdroid依赖
     implementation("org.osmdroid:osmdroid-android:6.1.20")
