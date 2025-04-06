@@ -101,9 +101,8 @@ public class StatsFragment extends BaseFragment {
     private int minRating = 0;
     private int maxRating = 5;
 
-    // 添加位置和标签筛选相关的变量
+    // 添加位置筛选相关的变量
     private String locationFilter = "";
-    private Set<String> selectedTags = new HashSet<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -157,7 +156,9 @@ public class StatsFragment extends BaseFragment {
         scrollView = view.findViewById(R.id.stats_scroll_view);
         btnDateRange = view.findViewById(R.id.btn_date_range);
         btnPriceRange = view.findViewById(R.id.btn_price_range);
-        
+        btnListDateFilter = view.findViewById(R.id.btn_date_range_list);
+        btnListFilter = view.findViewById(R.id.btn_filter);
+
         // 获取视图容器
         View listViewContainer = view.findViewById(R.id.list_view_container);
         View chartViewContainer = view.findViewById(R.id.chart_view_container);
@@ -259,14 +260,11 @@ public class StatsFragment extends BaseFragment {
             }
         });
 
-        // 初始化列表视图中的筛选按钮
-        btnListDateFilter = view.findViewById(R.id.btn_date_range_list);
-        btnListFilter = view.findViewById(R.id.btn_filter);
-        
+        // 设置列表视图中的筛选按钮点击事件
         if (btnListDateFilter != null) {
             btnListDateFilter.setOnClickListener(v -> showListDatePicker());
         }
-        
+
         if (btnListFilter != null) {
             btnListFilter.setOnClickListener(v -> showListFilterDialog());
         }
@@ -337,7 +335,7 @@ public class StatsFragment extends BaseFragment {
     }
 
     private void initDateRange() {
-        // 设置默认日期范围为当前月份的第一天到最后一天
+        // 获取当前日期
         Calendar calendar = Calendar.getInstance();
         
         // 设置为当月第一天
@@ -348,27 +346,42 @@ public class StatsFragment extends BaseFragment {
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         endDate = calendar.getTime();
         
-        // 更新按钮文本
-        updateDateRangeButtonText();
+        // 更新两个视图的按钮文本
+        String currentMonth = yearMonthFormat.format(startDate);
+        if (btnDateRange != null) {
+            btnDateRange.setText(currentMonth);
+        }
+        if (btnListDateFilter != null) {
+            btnListDateFilter.setText(currentMonth);
+        }
     }
 
     private void updateDateRangeButtonText() {
         // 如果起止日期在同一月份，则只显示年月
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.setTime(startDate);
-        
+
         Calendar endCalendar = Calendar.getInstance();
         endCalendar.setTime(endDate);
-        
+
+        String dateText;
         if (startCalendar.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR) &&
-            startCalendar.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)) {
-            btnDateRange.setText(yearMonthFormat.format(startDate));
+                startCalendar.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)) {
+            dateText = yearMonthFormat.format(startDate);
         } else {
             // 否则显示起止日期
             SimpleDateFormat shortFormat = new SimpleDateFormat("MM/dd", Locale.getDefault());
             String startStr = shortFormat.format(startDate);
             String endStr = shortFormat.format(endDate);
-            btnDateRange.setText(startStr + " - " + endStr);
+            dateText = startStr + " - " + endStr;
+        }
+
+        // 更新两个视图的按钮文本
+        if (btnDateRange != null) {
+            btnDateRange.setText(dateText);
+        }
+        if (btnListDateFilter != null) {
+            btnListDateFilter.setText(dateText);
         }
     }
 
@@ -514,20 +527,6 @@ public class StatsFragment extends BaseFragment {
             int rating = (int) item.getRating();
             if (rating < minRating || rating > maxRating) {
                 continue;
-            }
-            
-            // 检查标签
-            if (!selectedTags.isEmpty() && item.getTags() != null) {
-                boolean hasMatchingTag = false;
-                for (String tag : item.getTags()) {
-                    if (selectedTags.contains(tag)) {
-                        hasMatchingTag = true;
-                        break;
-                    }
-                }
-                if (!hasMatchingTag) {
-                    continue;
-                }
             }
             
             // 通过所有筛选条件
@@ -846,7 +845,7 @@ public class StatsFragment extends BaseFragment {
                 endDate = newCal.getTime();
                 
                 // 更新按钮文本
-                btnListDateFilter.setText(yearMonthFormat.format(startDate));
+                updateDateRangeButtonText();
                 
                 // 重新加载数据
                 loadData();
@@ -873,9 +872,6 @@ public class StatsFragment extends BaseFragment {
         // 获取评分范围滑块
         RangeSlider ratingRangeSlider = dialogView.findViewById(R.id.rating_range_slider);
         TextView tvRatingRange = dialogView.findViewById(R.id.tv_rating_range);
-        
-        // 获取标签选择器
-        ChipGroup chipGroupTags = dialogView.findViewById(R.id.chip_group_tags);
         
         // 设置当前价格范围
         priceRangeSlider.setValues((float)minPrice, (float)maxPrice);
@@ -904,16 +900,7 @@ public class StatsFragment extends BaseFragment {
             tvRatingRange.setText(String.format("%d - %d 星", min, max));
         });
         
-        // 设置当前标签选择
-        for (int i = 0; i < chipGroupTags.getChildCount(); i++) {
-            View child = chipGroupTags.getChildAt(i);
-            if (child instanceof Chip) {
-                Chip chip = (Chip) child;
-                chip.setChecked(selectedTags.contains(chip.getText().toString()));
-            }
-        }
-        
-        // 创建对话框
+        // 创建并显示对话框
         new MaterialAlertDialogBuilder(requireContext())
             .setTitle("筛选条件")
             .setView(dialogView)
@@ -931,18 +918,6 @@ public class StatsFragment extends BaseFragment {
                 minRating = Math.round(ratingValues.get(0));
                 maxRating = Math.round(ratingValues.get(1));
                 
-                // 获取选中的标签
-                selectedTags.clear();
-                for (int i = 0; i < chipGroupTags.getChildCount(); i++) {
-                    View child = chipGroupTags.getChildAt(i);
-                    if (child instanceof Chip) {
-                        Chip chip = (Chip) child;
-                        if (chip.isChecked()) {
-                            selectedTags.add(chip.getText().toString());
-                        }
-                    }
-                }
-                
                 // 更新筛选按钮文本
                 updateFilterButtonText();
                 
@@ -951,18 +926,6 @@ public class StatsFragment extends BaseFragment {
             })
             .setNegativeButton("取消", null)
             .show();
-    }
-
-    // 获取ChipGroup中所有的Chip
-    private List<Chip> getAllChips(ChipGroup chipGroup) {
-        List<Chip> chips = new ArrayList<>();
-        for (int i = 0; i < chipGroup.getChildCount(); i++) {
-            View child = chipGroup.getChildAt(i);
-            if (child instanceof Chip) {
-                chips.add((Chip) child);
-            }
-        }
-        return chips;
     }
 
     // 更新筛选按钮文本
@@ -980,11 +943,6 @@ public class StatsFragment extends BaseFragment {
         // 如果评分范围不是0-5，添加评分范围
         if (minRating > 0 || maxRating < 5) {
             filterText.append(" | ").append(minRating).append("-").append(maxRating).append("星");
-        }
-        
-        // 如果有选中的标签，添加标签数量
-        if (!selectedTags.isEmpty()) {
-            filterText.append(" | ").append(selectedTags.size()).append("个标签");
         }
         
         btnListFilter.setText(filterText.toString());
