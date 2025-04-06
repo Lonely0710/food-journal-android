@@ -159,7 +159,7 @@ public class MineFragment extends BaseFragment {
     }
     
     /**
-     * 加载用户头像 - 添加渐变效果
+     * 加载用户头像
      */
     private void loadUserAvatar(String avatarUrl) {
         if (getActivity() == null || !isAdded()) return;

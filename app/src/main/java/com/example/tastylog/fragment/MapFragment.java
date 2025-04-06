@@ -72,16 +72,9 @@ public class MapFragment extends BaseFragment implements MapListener {
             // 设置瓦片源，使用OpenStreetMap先测试是否有网络
             mapView.setTileSource(TileSourceFactory.MAPNIK);
             
-            // 或使用天地图
-            // mapView.setTileSource(Config.TDTVEC_W);
-            
             // 添加调试日志
             Log.d(TAG, "瓦片源已设置: " + mapView.getTileProvider().getTileSource().name());
             
-            // 添加注记图层（可选）
-            // TilesOverlay tilesOverlay = new TilesOverlay(
-            //     new MapTileProviderBasic(requireContext(), Config.TDTCIA_W), requireContext());
-            // mapView.getOverlays().add(tilesOverlay);
             
             // 启用内置缩放控制
             mapView.setMultiTouchControls(true);
@@ -182,8 +175,6 @@ public class MapFragment extends BaseFragment implements MapListener {
         mapView.invalidate();
     }
     
-    // 模拟地理编码，根据地点名生成假坐标点
-    // 在实际应用中应替换为真实的地理编码服务
     private GeoPoint simulateGeoPoint(String location) {
         // 基于中国中心点随机生成坐标
         double baseLat = Config.defaultGeoPoint.getLatitude();
