@@ -3,7 +3,6 @@
 <div align="center">
   <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202504070132246.jpg" width="200" alt="应用图标">
   
-  [![Android CI](https://github.com/yourname/food-journal/actions/workflows/android.yml/badge.svg)](https://github.com/yourname/food-journal/actions)
   [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 </div>
 
@@ -157,5 +156,3 @@ adb install app/release/foodjournal-v1.0.0.apk
 - [ ] 热力图分析 (2025 Q3)  
 - [ ] AI美食推荐 (2026 Q1)  
 </details>
-```
-
