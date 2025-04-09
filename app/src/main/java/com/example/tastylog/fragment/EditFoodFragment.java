@@ -31,6 +31,7 @@ import com.example.tastylog.AppwriteWrapper;
 import com.example.tastylog.MainActivity;
 import com.example.tastylog.R;
 import com.example.tastylog.model.FoodItem;
+import com.example.tastylog.config.AppConfig;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -248,13 +249,13 @@ public class EditFoodFragment extends BaseFragment {
                 
                 // 上传照片
                 AppwriteWrapper.getInstance().uploadFile(
-                    "67c2de08001a22001a6c", // FOOD_IMAGES_BUCKET_ID
+                    AppConfig.FOOD_IMAGES_BUCKET_ID,, // FOOD_IMAGES_BUCKET_ID
                     fileName,
                     fileBytes,
                     fileId -> {
                         // 获取文件URL
                         final String uploadedImageUrl = AppwriteWrapper.getInstance().getFilePreviewUrl(
-                            "67c2de08001a22001a6c", // FOOD_IMAGES_BUCKET_ID
+                            AppConfig.FOOD_IMAGES_BUCKET_ID,, // FOOD_IMAGES_BUCKET_ID
                             fileId
                         );
                         
@@ -410,11 +411,9 @@ public class EditFoodFragment extends BaseFragment {
     }
 
     private void showAddTagDialog() {
-        // 使用AlertDialog.Builder替代，避免样式问题
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("添加标签");
         
-        // 使用自定义布局
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_tag, null);
         builder.setView(dialogView);
         
@@ -522,10 +521,6 @@ public class EditFoodFragment extends BaseFragment {
     private void dispatchPickPictureIntent() {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_IMAGE_PICK);
-    }
-
-    private void loadImage(String imageUrl) {
-        // Implementation of loadImage method
     }
 
     private void setupTags(List<String> tags) {

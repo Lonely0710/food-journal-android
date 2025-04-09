@@ -53,10 +53,6 @@
         <activity android:name=".MainActivity" />
 
         <activity
-            android:name=".FoodDetailActivity"
-            android:theme="@style/Theme.TastyLog"/>
-
-        <activity
             android:name=".MineActivity"
             android:theme="@style/Theme.TastyLog"/>
 

@@ -253,7 +253,7 @@ object Appwrite {
         }
     }
 
-    // 简化后的注册方法 - 协程版本
+    // 注册方法 - 协程版本
     suspend fun register(email: String, password: String, name: String): String {
         return withContext(Dispatchers.IO) {
             try {

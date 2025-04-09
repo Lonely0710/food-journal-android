@@ -33,6 +33,7 @@ import com.example.tastylog.MainActivity;
 import com.example.tastylog.R;
 import com.example.tastylog.model.FoodItem;
 import com.example.tastylog.utils.BitmapUtil;
+import com.example.tastylog.config.AppConfig;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -369,13 +370,13 @@ public class AddFoodFragment extends BaseFragment {
                 
                 // 调用AppwriteWrapper上传文件
                 AppwriteWrapper.getInstance().uploadFile(
-                    "67c2de08001a22001a6c", // FOOD_IMAGES_BUCKET_ID
+                    AppConfig.FOOD_IMAGES_BUCKET_ID,
                     fileName,
                     fileBytes,
                     fileId -> {
                         // 获取文件URL并立即创建最终变量
                         final String uploadedImageUrl = AppwriteWrapper.getInstance().getFilePreviewUrl(
-                            "67c2de08001a22001a6c", // FOOD_IMAGES_BUCKET_ID
+                            AppConfig.FOOD_IMAGES_BUCKET_ID,
                             fileId
                         );
                         

@@ -39,13 +39,13 @@ public class SplashActivity extends AppCompatActivity {
     private void navigateToNextScreen() {
         String userId = AppwriteWrapper.getInstance().getCurrentUserId();
         Intent intent;
-        
+
         if (userId != null && !userId.isEmpty()) {
             intent = new Intent(SplashActivity.this, MainActivity.class);
         } else {
             intent = new Intent(SplashActivity.this, LoginActivity.class);
         }
-        // Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+//         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         
         startActivity(intent);
         finish();

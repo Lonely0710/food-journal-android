@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.tastylog.AppwriteWrapper;
-import com.example.tastylog.FoodDetailActivity;
 import com.example.tastylog.MainActivity;
 import com.example.tastylog.R;
 import com.example.tastylog.adapter.FoodImageAdapter;
@@ -63,13 +62,12 @@ public class FoodDetailFragment extends Fragment {
         }
         
         if (foodItem != null) {
-            // 使用布局中实际存在的ID
             TextView tvTitle = view.findViewById(R.id.tv_title);
             TextView tvTime = view.findViewById(R.id.tv_time);
             TextView tvPrice = view.findViewById(R.id.tv_price);
             TextView tvRating = view.findViewById(R.id.tv_rating);
-            TextView tvNotes = view.findViewById(R.id.tv_notes); // 用于显示备注/content
-            RatingBar ratingBar = view.findViewById(R.id.rating_bar); // 添加RatingBar
+            TextView tvNotes = view.findViewById(R.id.tv_notes); 
+            RatingBar ratingBar = view.findViewById(R.id.rating_bar); 
             
             // 设置内容
             if (tvTitle != null) tvTitle.setText(foodItem.getTitle());
@@ -202,11 +200,8 @@ public class FoodDetailFragment extends Fragment {
                 Log.d("FoodDetailFragment", "用户确认删除");
                 
                 // 处理不同类型的Activity
-                if (getActivity() instanceof FoodDetailActivity) {
-                    ((FoodDetailActivity) getActivity()).deleteFoodItem(foodItem);
-                } else if (getActivity() instanceof MainActivity) {
-                    // 添加处理MainActivity的逻辑
-                    Log.d("FoodDetailFragment", "MainActivity中调用删除");
+                if (getActivity() instanceof MainActivity) {
+                    // 处理删除逻辑
                     AppwriteWrapper appwrite = AppwriteWrapper.getInstance();
                     String userId = appwrite.getCurrentUserId();
                     String documentId = foodItem.getDocumentId();
