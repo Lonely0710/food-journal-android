@@ -1,10 +1,19 @@
-# 🍽️ 食物志 - Food Journal
-
 <div align="center">
   <img src="https://lonelynotes-images.oss-cn-beijing.aliyuncs.com/202504070132246.jpg" width="200" alt="应用图标">
-  
-  [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 </div>
+
+<p align="center">
+  <img alt="license" src="https://img.shields.io/github/license/Lonely0710/food-journal-Android" />
+  <img alt="stars" src="https://img.shields.io/github/stars/Lonely0710/food-journal-Android" />
+  <img alt="forks" src="https://img.shields.io/github/forks/Lonely0710/food-journal-Android" />
+  <img alt="issues" src="https://img.shields.io/github/issues/Lonely0710/food-journal-Android" />
+  <!-- 如果你的项目有发布版本，可以取消下面这行的注释 -->
+  <!-- <img alt="release" src="https://img.shields.io/github/v/release/Lonely0710/food-journal-Android" /> -->
+  <!-- 如果你的项目有总下载量统计，可以取消下面这行的注释 -->
+  <!-- <img alt="downloads" src="https://img.shields.io/github/downloads/Lonely0710/food-journal-Android/total" /> -->
+</p>
+
+# 食物志 - Food Journal
 
 > 一个精致的美食记录与发现平台，用数据讲述你的美食故事
 
