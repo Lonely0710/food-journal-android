@@ -178,9 +178,6 @@ public class EditFoodFragment extends BaseFragment {
             
             // 处理图片
             String imageUrl = foodItemToEdit.getImageUrl();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                loadImage(imageUrl);
-            }
             
             // 初始化日期对象
             if (foodItemToEdit.getTime() != null && !foodItemToEdit.getTime().isEmpty()) {
@@ -249,13 +246,13 @@ public class EditFoodFragment extends BaseFragment {
                 
                 // 上传照片
                 AppwriteWrapper.getInstance().uploadFile(
-                    AppConfig.FOOD_IMAGES_BUCKET_ID,, // FOOD_IMAGES_BUCKET_ID
+                    AppConfig.FOOD_IMAGES_BUCKET_ID, // FOOD_IMAGES_BUCKET_ID
                     fileName,
                     fileBytes,
                     fileId -> {
                         // 获取文件URL
                         final String uploadedImageUrl = AppwriteWrapper.getInstance().getFilePreviewUrl(
-                            AppConfig.FOOD_IMAGES_BUCKET_ID,, // FOOD_IMAGES_BUCKET_ID
+                            AppConfig.FOOD_IMAGES_BUCKET_ID, // FOOD_IMAGES_BUCKET_ID
                             fileId
                         );
                         

@@ -52,7 +52,7 @@ public class HomeFragment extends BaseFragment {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
 
     @Override
-    public View (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         
         // 初始化视图
