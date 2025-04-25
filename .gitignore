@@ -14,5 +14,5 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/main/java/com/example/tastylog/config/AppConfig.java
-/release
+/app/src/main/java/com/example/tastylog/config/AppConfig.java
+/app/release/
