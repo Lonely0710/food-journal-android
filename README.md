@@ -3,14 +3,12 @@
 </div>
 
 <p align="center">
-  <img alt="license" src="https://img.shields.io/github/license/Lonely0710/food-journal-Android" />
-  <img alt="stars" src="https://img.shields.io/github/stars/Lonely0710/food-journal-Android" />
-  <img alt="forks" src="https://img.shields.io/github/forks/Lonely0710/food-journal-Android" />
-  <img alt="issues" src="https://img.shields.io/github/issues/Lonely0710/food-journal-Android" />
-  <!-- 如果你的项目有发布版本，可以取消下面这行的注释 -->
-  <!-- <img alt="release" src="https://img.shields.io/github/v/release/Lonely0710/food-journal-Android" /> -->
-  <!-- 如果你的项目有总下载量统计，可以取消下面这行的注释 -->
-  <!-- <img alt="downloads" src="https://img.shields.io/github/downloads/Lonely0710/food-journal-Android/total" /> -->
+  <img alt="license" src="https://img.shields.io/github/license/Lonely0710/food-journal-android?style=flat-round" />
+  <img alt="gitHubtoplanguage" src="https://img.shields.io/github/languages/top/Lonely0710/food-journal-android" />
+  <img alt="issues" src="https://img.shields.io/github/issues/Lonely0710/food-journal-android" />
+  <img alt="stars" src="https://img.shields.io/github/stars/Lonely0710/food-journal-android" />
+  <!-- <img alt="release" src="https://img.shields.io/github/v/release/Lonely0710/food-journal-android" /> -->
+  <!-- <img alt="downloads" src="https://img.shields.io/github/downloads/Lonely0710/food-journal-android" /> -->
 </p>
 
 # 食物志 - Food Journal
